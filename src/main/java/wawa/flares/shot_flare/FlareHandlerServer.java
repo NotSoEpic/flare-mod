@@ -1,14 +1,12 @@
 package wawa.flares.shot_flare;
 
 import foundry.veil.api.network.VeilPacketManager;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.server.level.DistanceManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.jetbrains.annotations.Nullable;
-import wawa.flares.Flares;
 import wawa.flares.packets.FlareDataPacket;
 
 import java.util.*;
@@ -22,9 +20,11 @@ public class FlareHandlerServer {
     }
 
     public static void flareEntityTick(final ServerLevel serverLevel, final FlareEntity flare) {
-        final FlareData data = getFlaresIn(serverLevel).get(flare.getUUID());
+        FlareData data = getFlaresIn(serverLevel).get(flare.getUUID());
         if (data == null) {
-            getFlaresIn(serverLevel).put(flare.getUUID(), new FlareData(true, flare));
+            data = new FlareData(true, flare);
+            getFlaresIn(serverLevel).put(flare.getUUID(), data);
+            VeilPacketManager.level(serverLevel).sendPacket(new FlareDataPacket(data));
         } else {
             if (data.isLoaded()) {
                 data.copyFromEntity(flare);
