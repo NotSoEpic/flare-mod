@@ -17,7 +17,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import wawa.flares.AllComponents;
 import wawa.flares.AllItems;
-import wawa.flares.Flares;
 import wawa.flares.data_component.FlareComponent;
 import wawa.flares.mixinterface.SetRemovedListener;
 import wawa.flares.packets.FlareKillPacket;
@@ -46,9 +45,9 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
     @Override
     public void tick() {
         super.tick();
-        this.setDeltaMovement(this.getDeltaMovement().scale(0.95));
         this.entityData.set(IN_GROUND, this.inGround);
         if (this.isTrackable()) {
+            this.setDeltaMovement(this.getDeltaMovement().scale(0.95));
             if (this.level() instanceof final ServerLevel serverLevel) {
                 FlareHandlerServer.flareEntityTick(serverLevel, this);
             } else if (this.level() instanceof final ClientLevel clientLevel) {
@@ -59,7 +58,7 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
 
     @Override
     protected double getDefaultGravity() {
-        return 0;
+        return this.isTrackable() ? 0 : super.getDefaultGravity();
     }
 
     @Override
@@ -170,12 +169,14 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
     public void addAdditionalSaveData(final CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("TickCount", this.tickCount);
+        compound.putBoolean("Trackable", this.isTrackable());
     }
 
     @Override
     public void readAdditionalSaveData(final CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.tickCount = compound.getInt("TickCount");
+        this.setTrackable(compound.getBoolean("Trackable"));
         this.entityData.set(IN_GROUND, this.inGround);
         if (this.level() instanceof final ServerLevel serverLevel) {
             if (FlareHandlerServer.isRemoved(this.uuid)) {

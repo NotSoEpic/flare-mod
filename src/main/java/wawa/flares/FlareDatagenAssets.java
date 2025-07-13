@@ -22,6 +22,8 @@ public class FlareDatagenAssets {
             this.add("itemGroup.flares", "Flare Guns");
             this.add(AllItems.FLARE_GUN.get(), "Flare Gun");
             this.add(AllItems.FLARE.get(), "Flare");
+            this.add(AllEntities.FLARE.get(), "Flare");
+            this.add("flares.tooltip.trackable", "Signalling");
         }
     }
 

@@ -3,10 +3,15 @@ package wawa.flares.data_component;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import wawa.flares.AllComponents;
+
+import java.util.List;
 
 public record FlareComponent(int argbColor, boolean trackable) {
     public static FlareComponent DEFAULT = new FlareComponent(-1, false);
@@ -30,5 +35,11 @@ public record FlareComponent(int argbColor, boolean trackable) {
             return component.argbColor();
         }
         return -1;
+    }
+
+    public void appendHoverText(final Item.TooltipContext context, final List<Component> tooltipComponents, final TooltipFlag tooltipFlag) {
+        if (this.trackable) {
+            tooltipComponents.add(Component.translatable("flares.tooltip.trackable"));
+        }
     }
 }

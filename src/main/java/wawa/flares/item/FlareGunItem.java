@@ -14,9 +14,11 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ChargedProjectiles;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
+import wawa.flares.AllComponents;
 import wawa.flares.AllEntities;
 import wawa.flares.AllItems;
 import wawa.flares.Flares;
+import wawa.flares.data_component.FlareComponent;
 import wawa.flares.shot_flare.FlareEntity;
 
 import java.util.List;
@@ -123,6 +125,10 @@ public class FlareGunItem extends ProjectileWeaponItem {
         final FlareEntity entity = AllEntities.FLARE.get().create(level);
         entity.setPos(shooter.getEyePosition());
         entity.setPickupItemStack(ammo);
+        final FlareComponent component = ammo.get(AllComponents.FLARE);
+        if (component != null) {
+            entity.setTrackable(component.trackable());
+        }
         return entity;
     }
 
