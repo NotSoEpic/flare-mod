@@ -3,6 +3,7 @@ package wawa.flares.shot_flare;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -69,10 +70,9 @@ public class FlareEntityRenderer extends EntityRenderer<FlareEntity> {
         consumer.addVertex(pose, vec.x, vec.y, vec.z)
                 .setColor(color)
                 .setUv(u, v)
-                .setUv2(0, 0)
+                .setLight(LightTexture.FULL_BRIGHT)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(15728880) // fullbright sky and block light
-                .setNormal(pose, 0f, -1f, 0f);
+                .setNormal(pose, 0f, 1f, 0f);
     }
 
     @SubscribeEvent
