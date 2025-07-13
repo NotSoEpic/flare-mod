@@ -3,6 +3,7 @@ package wawa.flares.shot_flare;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -24,6 +25,8 @@ public class FlareData {
 
     public static final StreamCodec<ByteBuf, FlareData> STREAM_CODEC = ByteBufCodecs.fromCodec(CODEC);
 
+    private boolean entityLoaded;
+
     private int color;
     private Vec3 pos;
     private Vec3 vel;
@@ -31,17 +34,31 @@ public class FlareData {
     private int life;
     private boolean inGround;
 
-    public FlareData(final FlareEntity entity) {
+    public FlareData(final boolean entityLoaded, final FlareEntity entity) {
+        this.entityLoaded = entityLoaded;
         this.copyFromEntity(entity);
     }
 
     public FlareData(final int color, final Vec3 pos, final Vec3 vel, final UUID entity, final int life, final boolean inGround) {
+        this(false, color, pos, vel, entity, life, inGround);
+    }
+
+    public FlareData(final boolean entityLoaded, final int color, final Vec3 pos, final Vec3 vel, final UUID entity, final int life, final boolean inGround) {
+        this.entityLoaded = entityLoaded;
         this.color = color;
         this.pos = pos;
         this.vel = vel;
         this.entity = entity;
         this.life = life;
         this.inGround = inGround;
+    }
+
+    public void setLoaded(final boolean v) {
+        this.entityLoaded = v;
+    }
+
+    public boolean isLoaded() {
+        return this.entityLoaded;
     }
 
     public void copyFromEntity(final FlareEntity entity) {
@@ -62,32 +79,23 @@ public class FlareData {
     }
 
     public boolean unloadedTick() {
-        this.tickMovement();
-        this.life++;
-        return this.shouldRemove();
+        if (!this.entityLoaded) {
+            this.tickMovement();
+            this.life++;
+            return this.shouldRemove();
+        }
+        return false;
     }
 
     public void tickMovement() {
         if (!this.inGround) {
             this.pos = this.pos.add(this.vel);
-            this.vel = this.vel.scale(0.99).add(0, -0.05, 0);
+            this.vel = this.vel.scale(0.99 * 0.95);
         }
     }
 
     public boolean shouldRemove() {
         return this.life > 1200;
-    }
-
-    @Override
-    public String toString() {
-        return "FlareData{" +
-                "color=" + this.color +
-                ", pos=" + this.pos +
-                ", vel=" + this.vel +
-                ", entity=" + this.entity +
-                ", life=" + this.life +
-                ", inGround=" + this.inGround +
-                '}';
     }
 
     @Override
@@ -101,6 +109,10 @@ public class FlareData {
 
     public Vec3 getPos() {
         return this.pos;
+    }
+
+    public BlockPos getBlockPos() {
+        return BlockPos.containing(this.pos.x, this.pos.y, this.pos.z);
     }
 
     public Vec3 getVel() {

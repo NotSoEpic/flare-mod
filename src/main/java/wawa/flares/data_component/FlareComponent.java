@@ -8,14 +8,16 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import wawa.flares.AllComponents;
 
-public record FlareComponent(int argbColor) {
-    public static FlareComponent DEFAULT = new FlareComponent(-1);
+public record FlareComponent(int argbColor, boolean trackable) {
+    public static FlareComponent DEFAULT = new FlareComponent(-1, false);
     public static final Codec<FlareComponent> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
-                    Codec.INT.fieldOf("color").forGetter(FlareComponent::argbColor)
+                    Codec.INT.fieldOf("color").forGetter(FlareComponent::argbColor),
+                    Codec.BOOL.optionalFieldOf("trackable", false).forGetter(FlareComponent::trackable)
             ).apply(instance, FlareComponent::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, FlareComponent> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT, FlareComponent::argbColor,
+            ByteBufCodecs.BOOL, FlareComponent::trackable,
             FlareComponent::new
     );
 

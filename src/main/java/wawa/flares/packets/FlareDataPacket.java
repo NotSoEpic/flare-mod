@@ -22,6 +22,6 @@ public record FlareDataPacket(FlareData data) implements CustomPacketPayload {
     }
 
     public void handle(final ClientPacketContext context) {
-        FlareHandlerClient.put(context.client().level, this.data);
+        FlareHandlerClient.addFlare(context.client().level, this.data);
     }
 }

@@ -11,9 +11,9 @@ import wawa.flares.mixinterface.SetRemovedListener;
 public class EntityMixin implements SetRemovedListener {
     @Inject(method = "setRemoved", at = @At("TAIL"))
     private void listenToSetRemoved(final Entity.RemovalReason removalReason, final CallbackInfo ci) {
-        this.flares$accept(removalReason);
+        this.flares$onRemoved(removalReason);
     }
 
     @Override
-    public void flares$accept(final Entity.RemovalReason reason) {}
+    public void flares$onRemoved(final Entity.RemovalReason reason) {}
 }

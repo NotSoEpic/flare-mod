@@ -20,7 +20,6 @@ import wawa.flares.AllItems;
 import wawa.flares.Flares;
 import wawa.flares.data_component.FlareComponent;
 import wawa.flares.mixinterface.SetRemovedListener;
-import wawa.flares.packets.FlareDataPacket;
 import wawa.flares.packets.FlareKillPacket;
 
 import java.util.List;
@@ -28,6 +27,7 @@ import java.util.List;
 public class FlareEntity extends AbstractArrow implements SetRemovedListener {
     private static final EntityDataAccessor<ItemStack> FLARE_ITEM = SynchedEntityData.defineId(FlareEntity.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<Boolean> IN_GROUND = SynchedEntityData.defineId(FlareEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> TRACKABLE = SynchedEntityData.defineId(FlareEntity.class, EntityDataSerializers.BOOLEAN);
     private PointLight outerLight;
     private PointLight innerLight;
     public int color = -1;
@@ -40,18 +40,40 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
         super.defineSynchedData(builder);
         builder.define(FLARE_ITEM, AllItems.FLARE.toStack());
         builder.define(IN_GROUND, false);
+        builder.define(TRACKABLE, false);
     }
 
     @Override
     public void tick() {
         super.tick();
+        this.setDeltaMovement(this.getDeltaMovement().scale(0.95));
         this.entityData.set(IN_GROUND, this.inGround);
+        if (this.isTrackable()) {
+            if (this.level() instanceof final ServerLevel serverLevel) {
+                FlareHandlerServer.flareEntityTick(serverLevel, this);
+            } else if (this.level() instanceof final ClientLevel clientLevel) {
+                FlareHandlerClient.flareEntityTick(clientLevel, this);
+            }
+        }
+    }
+
+    @Override
+    protected double getDefaultGravity() {
+        return 0;
     }
 
     @Override
     protected void onHitBlock(final BlockHitResult result) {
         super.onHitBlock(result);
         this.entityData.set(IN_GROUND, this.inGround);
+    }
+
+    public boolean isTrackable() {
+        return this.entityData.get(TRACKABLE);
+    }
+
+    public void setTrackable(final boolean v) {
+        this.entityData.set(TRACKABLE, v);
     }
 
     @Override
@@ -82,7 +104,11 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
 
                 return;
             } else if (dataValue.id() == IN_GROUND.id()) {
-                this.inGround = (Boolean)dataValue.value();
+                this.inGround = (boolean)dataValue.value();
+            } else if (dataValue.id() == TRACKABLE.id()) {
+                if (!(boolean)dataValue.value() && this.level() instanceof final ClientLevel clientLevel) {
+                    FlareHandlerClient.remove(clientLevel, this.uuid);
+                }
             }
         }
     }
@@ -123,6 +149,10 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
 
     private void setSyncedStack(final ItemStack stack) {
         this.getEntityData().set(FLARE_ITEM, stack);
+        final FlareComponent component = stack.get(AllComponents.FLARE);
+        if (component != null) {
+            this.color = component.argbColor();
+        }
     }
 
     public boolean inGround() {
@@ -148,13 +178,12 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
         this.tickCount = compound.getInt("TickCount");
         this.entityData.set(IN_GROUND, this.inGround);
         if (this.level() instanceof final ServerLevel serverLevel) {
-            if (FlareHandlerServer.checkRemoved(this.uuid)) {
-                Flares.LOGGER.info("Removed flare {}", this.uuid);
+            if (FlareHandlerServer.isRemoved(this.uuid)) {
                 this.remove(RemovalReason.DISCARDED);
                 return;
             }
 
-            final FlareData data = FlareHandlerServer.remove(serverLevel, this.uuid);
+            final FlareData data = FlareHandlerServer.get(serverLevel, this.uuid);
             if (data != null) {
                 data.applyToEntity(this);
             }
@@ -162,17 +191,23 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
     }
 
     @Override
-    public void flares$accept(final RemovalReason reason) {
-        if (this.level() instanceof final ServerLevel serverLevel) {
-            if (reason.shouldSave()) {
-                FlareHandlerServer.put(serverLevel, this);
+    public void flares$onRemoved(final RemovalReason reason) {
+        if (this.isTrackable()) {
+            if (this.level() instanceof final ServerLevel serverLevel) {
+                if (reason.shouldSave()) {
+                    FlareHandlerServer.setUnloaded(serverLevel, this.uuid);
+                }
+                if (reason.shouldDestroy()) {
+                    VeilPacketManager.level(serverLevel).sendPacket(new FlareKillPacket(this.uuid));
+                    FlareHandlerServer.remove(serverLevel, this.uuid);
+                }
+            } else if (this.level() instanceof final ClientLevel clientLevel) {
+                if (reason.shouldSave()) {
+                    FlareHandlerClient.setUnloaded(clientLevel, this.uuid);
+                } else {
+                    FlareHandlerClient.remove(clientLevel, this.uuid);
+                }
             }
-            if (reason.shouldDestroy()) {
-                VeilPacketManager.level(serverLevel).sendPacket(new FlareKillPacket(this.uuid));
-                FlareHandlerServer.remove(serverLevel, this.uuid);
-            }
-        } else if (this.level() instanceof final ClientLevel clientLevel) {
-            FlareHandlerClient.put(clientLevel, new FlareData(this));
         }
     }
 }

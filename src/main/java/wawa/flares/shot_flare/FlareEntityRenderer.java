@@ -40,33 +40,41 @@ public class FlareEntityRenderer extends EntityRenderer<FlareEntity> {
     @Override
     public void render(final FlareEntity entity, final float entityYaw, final float partialTick, final PoseStack poseStack, final MultiBufferSource bufferSource, final int packedLight) {
         entity.updateLight(partialTick);
-        final Vector3f pos = entity.getPosition(partialTick).toVector3f();
-        final Quaternionf quaternion = new Quaternionf(Minecraft.getInstance().gameRenderer.getMainCamera().rotation());
-        quaternion.rotateZ(entity.tickCount / 10);
-        final VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.entityTranslucent(TEXTURE));
-        renderBillboardedQuad(vertexConsumer, poseStack, quaternion,
-                entity.color,
-                0, 0, 1, 1);
+        renderFlare(bufferSource, poseStack, entity.tickCount, entity.color, 1f);
     }
 
+    public static void renderFlare(final MultiBufferSource bufferSource, final PoseStack poseStack,
+                                   final int tickCount, final int color, final float scale) {
+        final Quaternionf quaternion = new Quaternionf(Minecraft.getInstance().gameRenderer.getMainCamera().rotation());
+        final int frameI = tickCount / 10;
+        quaternion.rotateZ(frameI);
+        final VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.entityTranslucent(TEXTURE));
+        renderBillboardedQuad(vertexConsumer, poseStack, quaternion,
+                color, scale, 1,
+                0, 0, 1, 0.5f);
+        final float glowScale = frameI % 3 * 0.2f + 0.3f;
+        renderBillboardedQuad(vertexConsumer, poseStack, quaternion,
+                color, glowScale * scale, 0.9f,
+                0, 0.5f, 1, 1);}
+
     public static void renderBillboardedQuad(final VertexConsumer buffer, final PoseStack poseStack, final Quaternionf quaternion,
-                                       final int color,
+                                       final int color, final float scale, final float zOff,
                                        final float u0, final float v0,
                                        final float u1, final float v1) {
         final PoseStack.Pose pose = poseStack.last();
-        vertex(pose, buffer, quaternion, color,  1, -1, u1, v1);
-        vertex(pose, buffer, quaternion, color,  1,  1, u1, v0);
-        vertex(pose, buffer, quaternion, color, -1,  1, u0, v0);
-        vertex(pose, buffer, quaternion, color, -1, -1, u0, v1);
+        vertex(pose, buffer, quaternion, color,  scale, -scale, zOff, u1, v1);
+        vertex(pose, buffer, quaternion, color,  scale,  scale, zOff, u1, v0);
+        vertex(pose, buffer, quaternion, color, -scale,  scale, zOff, u0, v0);
+        vertex(pose, buffer, quaternion, color, -scale, -scale, zOff, u0, v1);
     }
 
     private static void vertex(final PoseStack.Pose pose,
                         final VertexConsumer consumer,
                         final Quaternionf quaternion,
                         final int color,
-                        final float xo, final float yo,
+                        final float xo, final float yo, final float zo,
                         final float u, final float v) {
-        final Vector3f vec = new Vector3f(xo, yo, 0.5f).rotate(quaternion);
+        final Vector3f vec = new Vector3f(xo, yo, zo).rotate(quaternion);
         consumer.addVertex(pose, vec.x, vec.y, vec.z)
                 .setColor(color)
                 .setUv(u, v)
