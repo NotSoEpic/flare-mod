@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "flares:item/flare_shell"
+    "layer0": "flares:item/illumination_flare_shell"
   }
 }

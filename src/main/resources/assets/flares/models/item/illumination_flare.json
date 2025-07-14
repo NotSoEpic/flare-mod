@@ -1,7 +1,7 @@
 {
 	"parent": "item/generated",
 	"textures": {
-		"layer0": "flares:item/flare",
+		"layer0": "flares:item/illumination_flare",
 		"layer1": "flares:item/flare_label"
 	}
 }

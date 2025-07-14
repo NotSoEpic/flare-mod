@@ -1,21 +1,14 @@
 package wawa.flares;
 
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
-import net.minecraft.data.tags.ItemTagsProvider;
-import net.minecraft.data.tags.TagsProvider;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -59,30 +52,34 @@ public class FlareDatagenData {
                     .unlockedBy("has_iron", has(Tags.Items.INGOTS_IRON))
                     .save(recipeOutput);
 
-            ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, AllItems.FLARE_SHELL.get(), 4)
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, AllItems.ILLUMINATION_FLARE_SHELL.get(), 4)
                     .requires(Tags.Items.INGOTS_IRON)
+                    .requires(Tags.Items.GUNPOWDERS)
                     .requires(Items.CHARCOAL)
+                    .requires(Tags.Items.DUSTS_GLOWSTONE)
                     .group("flare_shells")
                     .unlockedBy("has_flare_gun", has(AllItems.FLARE_GUN))
                     .save(recipeOutput, Flares.resource("flare_shell_charcoal"));
             ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, AllItems.SIGNALLING_FLARE_SHELL.get(), 4)
                     .requires(Tags.Items.INGOTS_COPPER)
+                    .requires(Tags.Items.GUNPOWDERS)
                     .requires(Items.CHARCOAL)
-                    .requires(Tags.Items.DUSTS_GLOWSTONE)
+                    .requires(Tags.Items.DUSTS_REDSTONE)
                     .group("signalling_flare_shells")
                     .unlockedBy("has_flare_gun", has(AllItems.FLARE_GUN))
                     .save(recipeOutput, Flares.resource("signalling_flare_shell_charcoal"));
 
-            ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, AllItems.FLARE_SHELL.get(), 16)
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, AllItems.ILLUMINATION_FLARE_SHELL.get(), 16)
                     .requires(Tags.Items.INGOTS_IRON)
                     .requires(Items.BLAZE_POWDER)
+                    .requires(Tags.Items.DUSTS_GLOWSTONE)
                     .group("flare_shells")
                     .unlockedBy("has_flare_shell", has(AllTags.FLARES))
                     .save(recipeOutput, Flares.resource("flare_shell_blaze_powder"));
             ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, AllItems.SIGNALLING_FLARE_SHELL.get(), 16)
                     .requires(Tags.Items.INGOTS_COPPER)
                     .requires(Items.BLAZE_POWDER)
-                    .requires(Tags.Items.DUSTS_GLOWSTONE)
+                    .requires(Tags.Items.DUSTS_REDSTONE)
                     .group("signalling_flare_shells")
                     .unlockedBy("has_flare_shell", has(AllTags.FLARES))
                     .save(recipeOutput, Flares.resource("signalling_flare_shell_blaze_powder"));

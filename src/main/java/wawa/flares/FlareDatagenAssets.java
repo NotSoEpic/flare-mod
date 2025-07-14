@@ -2,9 +2,7 @@ package wawa.flares;
 
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.data.LanguageProvider;
@@ -22,10 +20,10 @@ public class FlareDatagenAssets {
 
             this.add(AllItems.FLARE_GUN.get(), "Flare Gun");
 
-            this.add(AllItems.FLARE_SHELL.get(), "Flare Shell");
+            this.add(AllItems.ILLUMINATION_FLARE_SHELL.get(), "Illumination Flare Shell");
             this.add(AllItems.SIGNALLING_FLARE_SHELL.get(), "Signalling Flare Shell");
 
-            this.add(AllItems.FLARE.get(), "Flare");
+            this.add(AllItems.FLARE.get(), "Illumination Flare");
             this.add(AllItems.SIGNALLING_FLARE.get(), "Signalling Flare");
 
             this.add(AllEntities.FLARE.get(), "Flare");
@@ -39,7 +37,7 @@ public class FlareDatagenAssets {
 
         @Override
         protected void registerModels() {
-            this.basicItem(AllItems.FLARE_SHELL.get());
+            this.basicItem(AllItems.ILLUMINATION_FLARE_SHELL.get());
             this.basicItem(AllItems.SIGNALLING_FLARE_SHELL.get());
         }
     }

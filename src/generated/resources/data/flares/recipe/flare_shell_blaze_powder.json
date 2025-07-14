@@ -8,10 +8,13 @@
     },
     {
       "item": "minecraft:blaze_powder"
+    },
+    {
+      "tag": "c:dusts/glowstone"
     }
   ],
   "result": {
     "count": 16,
-    "id": "flares:flare_shell"
+    "id": "flares:illumination_flare_shell"
   }
 }

@@ -7,11 +7,17 @@
       "tag": "c:ingots/iron"
     },
     {
+      "tag": "c:gunpowders"
+    },
+    {
       "item": "minecraft:charcoal"
+    },
+    {
+      "tag": "c:dusts/glowstone"
     }
   ],
   "result": {
     "count": 4,
-    "id": "flares:flare_shell"
+    "id": "flares:illumination_flare_shell"
   }
 }

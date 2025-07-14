@@ -7,10 +7,13 @@
       "tag": "c:ingots/copper"
     },
     {
+      "tag": "c:gunpowders"
+    },
+    {
       "item": "minecraft:charcoal"
     },
     {
-      "tag": "c:dusts/glowstone"
+      "tag": "c:dusts/redstone"
     }
   ],
   "result": {

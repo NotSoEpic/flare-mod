@@ -1,7 +1,7 @@
 {
   "values": [
     "#flares:usable_flares",
-    "flares:flare_shell",
+    "flares:illumination_flare_shell",
     "flares:signalling_flare_shell"
   ]
 }

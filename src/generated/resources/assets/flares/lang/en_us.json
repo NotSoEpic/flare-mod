@@ -1,8 +1,8 @@
 {
   "entity.flares.flare": "Flare",
-  "item.flares.flare": "Flare",
   "item.flares.flare_gun": "Flare Gun",
-  "item.flares.flare_shell": "Flare Shell",
+  "item.flares.illumination_flare": "Illumination Flare",
+  "item.flares.illumination_flare_shell": "Illumination Flare Shell",
   "item.flares.signalling_flare": "Signalling Flare",
   "item.flares.signalling_flare_shell": "Signalling Flare Shell",
   "itemGroup.flares": "Flare Guns"

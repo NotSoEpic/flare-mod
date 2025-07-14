@@ -18,13 +18,15 @@ public class AllItems {
 
     public static void addTabItems(final CreativeModeTab.Output output) {
         output.accept(FLARE_GUN.get());
-        output.accept(FLARE_SHELL.get());
+        output.accept(ILLUMINATION_FLARE_SHELL.get());
         output.accept(SIGNALLING_FLARE_SHELL.get());
         for (final DyeColor color : DyeColor.values()) {
-            ItemStack stack = FLARE.toStack();
+            final ItemStack stack = FLARE.toStack();
             stack.set(AllComponents.FLARE.get(), new FlareComponent(color.getFireworkColor() | 0xFF000000, false));
             output.accept(stack);
-            stack = SIGNALLING_FLARE.toStack();
+        }
+        for (final DyeColor color : DyeColor.values()) {
+            final ItemStack stack = SIGNALLING_FLARE.toStack();
             stack.set(AllComponents.FLARE.get(), new FlareComponent(color.getFireworkColor() | 0xFF000000, true));
             output.accept(stack);
         }
@@ -35,10 +37,10 @@ public class AllItems {
     public static final DeferredItem<FlareGunItem> FLARE_GUN = ITEMS.register("flare_gun",
             () -> new FlareGunItem(new Item.Properties().stacksTo(1)));
 
-    public static final DeferredItem<Item> FLARE_SHELL = ITEMS.registerSimpleItem("flare_shell");
+    public static final DeferredItem<Item> ILLUMINATION_FLARE_SHELL = ITEMS.registerSimpleItem("illumination_flare_shell");
     public static final DeferredItem<Item> SIGNALLING_FLARE_SHELL = ITEMS.registerSimpleItem("signalling_flare_shell");
 
-    public static final DeferredItem<Item> FLARE = ITEMS.register("flare",
+    public static final DeferredItem<Item> FLARE = ITEMS.register("illumination_flare",
             () -> new FlareItem(new Item.Properties()
                     .component(AllComponents.FLARE.get(), FlareComponent.DEFAULT)
             ));

@@ -2,9 +2,9 @@
   "type": "flares:flare_dye",
   "category": "equipment",
   "ingredient": {
-    "item": "flares:flare_shell"
+    "item": "flares:illumination_flare_shell"
   },
   "result": {
-    "id": "flares:flare"
+    "id": "flares:illumination_flare"
   }
 }
