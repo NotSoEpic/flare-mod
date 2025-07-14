@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -18,6 +17,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import wawa.flares.AllEntities;
+import wawa.flares.AllRenderTypes;
 import wawa.flares.Flares;
 
 @EventBusSubscriber(modid = Flares.MODID, value = Dist.CLIENT)
@@ -39,6 +39,9 @@ public class FlareEntityRenderer extends EntityRenderer<FlareEntity> {
 
     @Override
     public void render(final FlareEntity entity, final float entityYaw, final float partialTick, final PoseStack poseStack, final MultiBufferSource bufferSource, final int packedLight) {
+        if (entity.tickCount > 1200) {
+            return;
+        }
         entity.updateLight(partialTick);
         renderFlare(bufferSource, poseStack, entity.tickCount, entity.color, 1f);
     }
@@ -48,13 +51,13 @@ public class FlareEntityRenderer extends EntityRenderer<FlareEntity> {
         final Quaternionf quaternion = new Quaternionf(Minecraft.getInstance().gameRenderer.getMainCamera().rotation());
         final int frameI = tickCount / 10;
         quaternion.rotateZ(frameI);
-        final VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.entityTranslucent(TEXTURE));
+        final VertexConsumer vertexConsumer = bufferSource.getBuffer(AllRenderTypes.flareBloom(TEXTURE));
         renderBillboardedQuad(vertexConsumer, poseStack, quaternion,
-                color, scale, 1,
+                color, scale, 0.25f,
                 0, 0, 1, 0.5f);
         final float glowScale = frameI % 3 * 0.2f + 0.3f;
         renderBillboardedQuad(vertexConsumer, poseStack, quaternion,
-                color, glowScale * scale, 0.9f,
+                color, glowScale * scale, 0.1f,
                 0, 0.5f, 1, 1);}
 
     public static void renderBillboardedQuad(final VertexConsumer buffer, final PoseStack poseStack, final Quaternionf quaternion,

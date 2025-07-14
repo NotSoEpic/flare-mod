@@ -47,12 +47,18 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
         super.tick();
         this.entityData.set(IN_GROUND, this.inGround);
         if (this.isTrackable()) {
-            this.setDeltaMovement(this.getDeltaMovement().scale(0.95));
+            if (!this.inGround) {
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.95));
+            }
             if (this.level() instanceof final ServerLevel serverLevel) {
                 FlareHandlerServer.flareEntityTick(serverLevel, this);
             } else if (this.level() instanceof final ClientLevel clientLevel) {
                 FlareHandlerClient.flareEntityTick(clientLevel, this);
             }
+        }
+        this.tickCount++;
+        if (this.tickCount > 1200) {
+            this.discard();
         }
     }
 
@@ -92,8 +98,8 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
                         this.innerLight.setBrightness(3f);
                         this.innerLight.setRadius(2.5f);
 
-                        VeilRenderSystem.renderer().getLightRenderer().addLight(this.outerLight);
-                        VeilRenderSystem.renderer().getLightRenderer().addLight(this.innerLight);
+//                        VeilRenderSystem.renderer().getLightRenderer().addLight(this.outerLight);
+//                        VeilRenderSystem.renderer().getLightRenderer().addLight(this.innerLight);
                     }
 
                     this.color = component.argbColor();
@@ -160,9 +166,6 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
 
     @Override
     protected void tickDespawn() {
-        if (this.tickCount > 1200) {
-            this.discard();
-        }
     }
 
     @Override

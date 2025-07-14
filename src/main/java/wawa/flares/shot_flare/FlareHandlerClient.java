@@ -1,16 +1,15 @@
 package wawa.flares.shot_flare;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import foundry.veil.impl.client.render.pipeline.VeilBloomRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import wawa.flares.Flares;
 import wawa.flares.mixin.LevelRendererGetter;
 
 import java.util.HashMap;
@@ -67,6 +66,7 @@ public class FlareHandlerClient {
 
     @SubscribeEvent
     public static void renderFlares(final RenderLevelStageEvent event) {
+        VeilBloomRenderer.enable();
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_WEATHER) {
             final HashMap<UUID, FlareData> renderable = flares.get(Minecraft.getInstance().level);
             if (renderable != null) {
