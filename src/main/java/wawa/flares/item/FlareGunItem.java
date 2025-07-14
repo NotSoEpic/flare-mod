@@ -146,8 +146,8 @@ public class FlareGunItem extends ProjectileWeaponItem {
     }
 
     @Override
-    public Predicate<ItemStack> getSupportedHeldProjectiles(final ItemStack stack) {
-        return s -> stack.is(AllTags.USABLE_FLARES);
+    public Predicate<ItemStack> getSupportedHeldProjectiles(final ItemStack thisIsTheFuckingGunItemStack) {
+        return andThisIsTheAmmoPredicateStack -> andThisIsTheAmmoPredicateStack.is(AllTags.USABLE_FLARES);
     }
 
     @Override

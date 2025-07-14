@@ -47,6 +47,7 @@ public class Flares {
 
         AllComponents.init(modEventBus);
         AllItems.init(modEventBus);
+        AllRecipes.init(modEventBus);
         AllEntities.init(modEventBus);
         AllPackets.init();
         CREATIVE_MODE_TABS.register(modEventBus);

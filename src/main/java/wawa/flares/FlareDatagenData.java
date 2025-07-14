@@ -64,28 +64,28 @@ public class FlareDatagenData {
                     .requires(Items.CHARCOAL)
                     .group("flare_shells")
                     .unlockedBy("has_flare_gun", has(AllItems.FLARE_GUN))
-                    .save(recipeOutput, "flare_shell_charcoal");
+                    .save(recipeOutput, Flares.resource("flare_shell_charcoal"));
             ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, AllItems.SIGNALLING_FLARE_SHELL.get(), 4)
                     .requires(Tags.Items.INGOTS_COPPER)
                     .requires(Items.CHARCOAL)
                     .requires(Tags.Items.DUSTS_GLOWSTONE)
                     .group("signalling_flare_shells")
                     .unlockedBy("has_flare_gun", has(AllItems.FLARE_GUN))
-                    .save(recipeOutput, "signalling_flare_shell_charcoal");
+                    .save(recipeOutput, Flares.resource("signalling_flare_shell_charcoal"));
 
             ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, AllItems.FLARE_SHELL.get(), 16)
                     .requires(Tags.Items.INGOTS_IRON)
                     .requires(Items.BLAZE_POWDER)
                     .group("flare_shells")
                     .unlockedBy("has_flare_shell", has(AllTags.FLARES))
-                    .save(recipeOutput, "flare_shell_blaze_powder");
+                    .save(recipeOutput, Flares.resource("flare_shell_blaze_powder"));
             ShapelessRecipeBuilder.shapeless(RecipeCategory.TOOLS, AllItems.SIGNALLING_FLARE_SHELL.get(), 16)
                     .requires(Tags.Items.INGOTS_COPPER)
                     .requires(Items.BLAZE_POWDER)
                     .requires(Tags.Items.DUSTS_GLOWSTONE)
                     .group("signalling_flare_shells")
                     .unlockedBy("has_flare_shell", has(AllTags.FLARES))
-                    .save(recipeOutput, "signalling_flare_shell_blaze_powder");
+                    .save(recipeOutput, Flares.resource("signalling_flare_shell_blaze_powder"));
         }
     }
 

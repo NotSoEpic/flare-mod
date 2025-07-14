@@ -1,6 +1,6 @@
 {
   "values": [
-    "#flares:flares",
+    "#flares:usable_flares",
     "flares:flare_shell",
     "flares:signalling_flare_shell"
   ]

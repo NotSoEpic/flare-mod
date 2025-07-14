@@ -1,0 +1,10 @@
+{
+  "type": "flares:flare_dye",
+  "category": "equipment",
+  "ingredient": {
+    "item": "flares:flare_shell"
+  },
+  "result": {
+    "id": "flares:flare"
+  }
+}

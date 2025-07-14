@@ -30,6 +30,7 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
     private static final EntityDataAccessor<Boolean> TRACKABLE = SynchedEntityData.defineId(FlareEntity.class, EntityDataSerializers.BOOLEAN);
     private PointLight outerLight;
     private PointLight innerLight;
+    public boolean theShadowsCuttingDeeper = false;
     public int color = -1;
     public FlareEntity(final EntityType<? extends AbstractArrow> entityType, final Level level) {
         super(entityType, level);
@@ -102,23 +103,24 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
                 final FlareComponent component = ((ItemStack)dataValue.value()).get(AllComponents.FLARE);
                 if (component != null) {
                     if (this.outerLight == null) {
+                        this.theShadowsCuttingDeeper = component.isDarkerThanDark();
                         this.outerLight = new PointLight();
                         this.outerLight.setPosition(this.getX(), this.getY(), this.getZ());
-                        this.outerLight.setBrightness(1f);
+                        this.outerLight.setBrightness(this.theShadowsCuttingDeeper ? -1f : 1f);
                         this.outerLight.setRadius(25.0f);
 
                         this.innerLight = new PointLight();
                         this.innerLight.setPosition(this.getX(), this.getY(), this.getZ());
-                        this.innerLight.setBrightness(3f);
+                        this.innerLight.setBrightness(this.theShadowsCuttingDeeper ? -3f : 3f);
                         this.innerLight.setRadius(2.5f);
+
+                        this.color = component.argbColor();
+                        this.outerLight.setColor(this.color);
+                        this.innerLight.setColor(this.color);
 
                         VeilRenderSystem.renderer().getLightRenderer().addLight(this.outerLight);
                         VeilRenderSystem.renderer().getLightRenderer().addLight(this.innerLight);
                     }
-
-                    this.color = component.argbColor();
-                    this.outerLight.setColor(this.color);
-                    this.innerLight.setColor(this.color);
                 }
 
                 return;
@@ -147,7 +149,10 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
             this.outerLight.setPosition(pos.x, pos.y, pos.z);
             this.innerLight.setPosition(pos.x, pos.y, pos.z);
             if (this.tickCount > 800) {
-                final float brightness = (1200f - this.tickCount) / (1200f - 800f);
+                float brightness = (1200f - this.tickCount) / (1200f - 800f);
+                if (this.theShadowsCuttingDeeper) {
+                    brightness *= -1;
+                }
                 this.outerLight.setBrightness(brightness);
                 this.outerLight.setRadius(25 * brightness);
                 this.innerLight.setBrightness(brightness * 3);

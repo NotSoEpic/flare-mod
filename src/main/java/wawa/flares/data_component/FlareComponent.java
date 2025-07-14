@@ -6,6 +6,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -27,13 +28,15 @@ public record FlareComponent(int argbColor, boolean trackable) {
             FlareComponent::new
     );
 
+    public boolean isDarkerThanDark() {
+        return this.argbColor == (DyeColor.BLACK.getFireworkColor() | 0xFF000000);
+    }
+
     public static int tint(final ItemStack stack, final int tintIndex) {
         final FlareComponent component = stack.get(AllComponents.FLARE.get());
         if (component != null) {
             if (tintIndex == 1) {
                 return component.argbColor();
-            } else if (tintIndex == 2) {
-                return component.trackable() ? -1 : 0;
             }
         }
         return -1;

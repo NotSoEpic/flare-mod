@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:signalling_flare_shell_charcoal"
+        "recipe": "flares:flare_shell_charcoal"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "minecraft:signalling_flare_shell_charcoal"
+      "flares:flare_shell_charcoal"
     ]
   }
 }

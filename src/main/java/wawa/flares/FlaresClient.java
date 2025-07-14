@@ -36,7 +36,7 @@ public class FlaresClient {
 
     @SubscribeEvent
     static void onColorHandler(final RegisterColorHandlersEvent.Item event) {
-        event.register(FlareComponent::tint, AllItems.FLARE.get());
+        event.register(FlareComponent::tint, AllItems.FLARE.get(), AllItems.SIGNALLING_FLARE.get());
     }
 }
 

@@ -83,7 +83,7 @@ public class FlareHandlerClient {
                     final float scale = (float) (pos.length() / 64f);
                     poseStack.pushPose();
                     poseStack.translate(pos.x, pos.y, pos.z);
-                    FlareEntityRenderer.renderFlare(bufferSource, poseStack, data.getLife(), data.getColor(), scale);
+                    FlareEntityRenderer.renderFlare(bufferSource, poseStack, data.getLife(), data.getColor(), scale, false);
                     poseStack.popPose();
                 });
                 // sucks to suck i guess boowomp

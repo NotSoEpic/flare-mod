@@ -24,6 +24,7 @@ import wawa.flares.Flares;
 @EventBusSubscriber(modid = Flares.MODID, value = Dist.CLIENT)
 public class FlareEntityRenderer extends EntityRenderer<FlareEntity> {
     public static ResourceLocation TEXTURE = Flares.resource("textures/entity/flare/sparkle.png");
+    public static ResourceLocation TEXTURE2 = Flares.resource("textures/entity/flare/normal_flare.png");
     protected FlareEntityRenderer(final EntityRendererProvider.Context context) {
         super(context);
     }
@@ -44,21 +45,29 @@ public class FlareEntityRenderer extends EntityRenderer<FlareEntity> {
             return;
         }
         entity.updateLight(partialTick);
-        renderFlare(bufferSource, poseStack, entity.tickCount, entity.color, 1f);
+        renderFlare(bufferSource, poseStack, entity.tickCount, entity.color, 1f, entity.theShadowsCuttingDeeper && entity.getRandom().nextFloat() < 0.01);
     }
 
     public static void renderFlare(final MultiBufferSource bufferSource, final PoseStack poseStack,
-                                   final int tickCount, final int color, final float scale) {
+                                   final int tickCount, final int color, final float scale,
+                                   final boolean normal) {
         final Quaternionf quaternion = new Quaternionf(Minecraft.getInstance().gameRenderer.getMainCamera().rotation());
         final int frameI = tickCount / 10;
-        quaternion.rotateZ(frameI);
-        renderBillboardedQuad(bufferSource.getBuffer(AllRenderTypes.flareBloom(TEXTURE)), poseStack, quaternion,
-                color, scale, 0.25f,
-                0, 0, 1, 0.5f);
-        final float glowScale = frameI % 3 * 0.2f + 0.3f;
-        renderBillboardedQuad(bufferSource.getBuffer(RenderType.entityTranslucent(TEXTURE)), poseStack, quaternion,
-                color, glowScale * scale, 0.1f,
-                0, 0.5f, 1, 1);}
+        if (normal) {
+            renderBillboardedQuad(bufferSource.getBuffer(RenderType.entityCutout(TEXTURE2)), poseStack, quaternion,
+                    -1, scale, 0.25f,
+                    0, 0, 1, 1);
+        } else {
+            quaternion.rotateZ(frameI);
+            renderBillboardedQuad(bufferSource.getBuffer(AllRenderTypes.flareBloom(TEXTURE)), poseStack, quaternion,
+                    color, scale, 0.25f,
+                    0, 0, 1, 0.5f);
+            final float glowScale = frameI % 3 * 0.2f + 0.3f;
+            renderBillboardedQuad(bufferSource.getBuffer(RenderType.entityTranslucent(TEXTURE)), poseStack, quaternion,
+                    color, glowScale * scale, 0.1f,
+                    0, 0.5f, 1, 1);
+        }
+    }
 
     public static void renderBillboardedQuad(final VertexConsumer buffer, final PoseStack poseStack, final Quaternionf quaternion,
                                        final int color, final float scale, final float zOff,

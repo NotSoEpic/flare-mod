@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:flare_shell_blaze_powder"
+        "recipe": "flares:flare_shell_blaze_powder"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "minecraft:flare_shell_blaze_powder"
+      "flares:flare_shell_blaze_powder"
     ]
   }
 }
