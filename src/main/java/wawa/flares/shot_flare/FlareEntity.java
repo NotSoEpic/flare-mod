@@ -4,7 +4,6 @@ import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.light.data.PointLightData;
 import foundry.veil.api.client.render.light.renderer.LightRenderHandle;
 import foundry.veil.api.network.VeilPacketManager;
-import foundry.veil.impl.client.render.light.InstancedPointLightRenderer;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -78,10 +77,10 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
                 );
             }
             if (this.level() instanceof final ServerLevel serverLevel) {
-                if (FlareHandlerServer.isRemoved(this.uuid)) {
+                if (FlareHandlerServer.get(serverLevel).isRemoved(this.uuid)) {
                     this.discard();
                 } else {
-                    FlareHandlerServer.flareEntityTick(serverLevel, this);
+                    FlareHandlerServer.get(serverLevel).flareEntityTick(serverLevel, this);
                 }
             } else if (this.level() instanceof final ClientLevel clientLevel) {
                 FlareHandlerClient.flareEntityTick(clientLevel, this);
@@ -244,7 +243,7 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
         this.setTrackable(compound.getBoolean("Trackable"));
         this.entityData.set(IN_GROUND, this.inGround);
         if (this.level() instanceof final ServerLevel serverLevel) {
-            final FlareData data = FlareHandlerServer.get(serverLevel, this.uuid);
+            final FlareData data = FlareHandlerServer.get(serverLevel).get(this.uuid);
             if (data != null) {
                 data.applyToEntity(this);
             }
@@ -256,11 +255,11 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
         if (this.isTrackable()) {
             if (this.level() instanceof final ServerLevel serverLevel) {
                 if (reason.shouldSave()) {
-                    FlareHandlerServer.setUnloaded(serverLevel, this.uuid);
+                    FlareHandlerServer.get(serverLevel).setUnloaded(this.uuid);
                 }
                 if (reason.shouldDestroy()) {
                     VeilPacketManager.level(serverLevel).sendPacket(new FlareKillPacket(this.uuid));
-                    FlareHandlerServer.remove(serverLevel, this.uuid);
+                    FlareHandlerServer.get(serverLevel).remove(this.uuid);
                 }
             } else if (this.level() instanceof final ClientLevel clientLevel) {
                 if (reason.shouldSave()) {

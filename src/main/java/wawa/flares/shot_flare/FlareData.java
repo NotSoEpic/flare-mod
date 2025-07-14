@@ -19,7 +19,8 @@ public class FlareData {
                     Vec3.CODEC.fieldOf("vel").forGetter(FlareData::getVel),
                     UUIDUtil.CODEC.fieldOf("uuid").forGetter(FlareData::getUuid),
                     Codec.INT.fieldOf("life").forGetter(FlareData::getLife),
-                    Codec.BOOL.fieldOf("inGround").forGetter(FlareData::isInGround)
+                    Codec.BOOL.fieldOf("inGround").forGetter(FlareData::isInGround),
+                    Codec.BOOL.fieldOf("syncable").forGetter(FlareData::isSyncable)
             ).apply(instance, FlareData::new));
 
     public static final StreamCodec<ByteBuf, FlareData> STREAM_CODEC = ByteBufCodecs.fromCodec(CODEC);
@@ -39,8 +40,9 @@ public class FlareData {
         this.copyFromEntity(uuid);
     }
 
-    public FlareData(final int color, final Vec3 pos, final Vec3 vel, final UUID uuid, final int life, final boolean inGround) {
+    public FlareData(final int color, final Vec3 pos, final Vec3 vel, final UUID uuid, final int life, final boolean inGround, final boolean syncable) {
         this(false, color, pos, vel, uuid, life, inGround);
+        this.setSyncable(true);
     }
 
     public FlareData(final boolean entityLoaded, final int color, final Vec3 pos, final Vec3 vel, final UUID uuid, final int life, final boolean inGround) {
