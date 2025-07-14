@@ -6,6 +6,7 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,7 +16,10 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ChargedProjectiles;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
-import wawa.flares.*;
+import wawa.flares.AllComponents;
+import wawa.flares.AllItems;
+import wawa.flares.AllTags;
+import wawa.flares.Flares;
 import wawa.flares.data_component.FlareComponent;
 import wawa.flares.shot_flare.FlareEntity;
 
@@ -119,25 +123,30 @@ public class FlareGunItem extends ProjectileWeaponItem {
         final ChargedProjectiles chargedprojectiles = weapon.set(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.EMPTY);
         if (chargedprojectiles != null && !chargedprojectiles.isEmpty() &&
                 level instanceof final ServerLevel serverlevel) {
-            this.shoot(serverlevel, shooter, shooter.getUsedItemHand(), weapon, chargedprojectiles.getItems(), 3.0F, 1.0F, true, null);
+            this.shoot(serverlevel, shooter, shooter.getUsedItemHand(), weapon, chargedprojectiles.getItems(), 3.0F, 6.0F, true, null);
         }
     }
 
     @Override
     protected Projectile createProjectile(final Level level, final LivingEntity shooter, final ItemStack weapon, final ItemStack ammo, final boolean isCrit) {
-        final FlareEntity entity = AllEntities.FLARE.get().create(level);
+        final FlareEntity entity = new FlareEntity(level, ammo);
         entity.setPos(shooter.getEyePosition());
-        entity.setPickupItemStack(ammo);
-        final FlareComponent component = ammo.get(AllComponents.FLARE);
-        if (component != null) {
-            entity.setTrackable(component.trackable());
-        }
         return entity;
     }
 
     @Override
     protected void shootProjectile(final LivingEntity shooter, final Projectile projectile, final int index, final float velocity, final float inaccuracy, final float angle, @Nullable final LivingEntity target) {
-        projectile.setDeltaMovement(shooter.getLookAngle().scale(velocity));
+        shooter.level().playSound(
+                null,
+                shooter.getX(),
+                shooter.getY(),
+                shooter.getZ(),
+                SoundEvents.ARROW_SHOOT,
+                shooter.getSoundSource(),
+                1.0F,
+                1.0F / (shooter.getRandom().nextFloat() * 0.4F + 1.7F)
+        );
+        projectile.shootFromRotation(shooter, shooter.getXRot(), shooter.getYRot() + angle, 0.0F, velocity, inaccuracy);
     }
 
     @Override

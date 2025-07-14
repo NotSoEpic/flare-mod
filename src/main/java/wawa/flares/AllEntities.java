@@ -16,7 +16,7 @@ public class AllEntities {
 
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(Registries.ENTITY_TYPE, Flares.MODID);
     public static final Supplier<EntityType<FlareEntity>> FLARE = ENTITY_TYPES.register("flare",
-            () -> EntityType.Builder.of(FlareEntity::new, MobCategory.MISC)
+            () -> EntityType.Builder.of((EntityType.EntityFactory<FlareEntity>)FlareEntity::new, MobCategory.MISC)
                     .sized(0.5f, 0.5f)
                     .eyeHeight(0.13F)
                     .clientTrackingRange(4)

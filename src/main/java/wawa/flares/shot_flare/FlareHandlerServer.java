@@ -20,6 +20,9 @@ public class FlareHandlerServer {
     }
 
     public static void flareEntityTick(final ServerLevel serverLevel, final FlareEntity flare) {
+        if (flare.getRemovalReason() != null) {
+            return;
+        }
         FlareData data = getFlaresIn(serverLevel).get(flare.getUUID());
         if (data == null) {
             data = new FlareData(true, flare);

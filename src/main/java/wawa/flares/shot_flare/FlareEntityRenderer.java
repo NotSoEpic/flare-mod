@@ -45,7 +45,7 @@ public class FlareEntityRenderer extends EntityRenderer<FlareEntity> {
             return;
         }
         entity.updateLight(partialTick);
-        renderFlare(bufferSource, poseStack, entity.tickCount, entity.color, 1f, entity.theShadowsCuttingDeeper && entity.getRandom().nextFloat() < 0.01);
+        renderFlare(bufferSource, poseStack, entity.tickCount, entity.color, 1f, entity.theShadowsCuttingDeeper && entity.getRandom().nextFloat() < 0.0001);
     }
 
     public static void renderFlare(final MultiBufferSource bufferSource, final PoseStack poseStack,

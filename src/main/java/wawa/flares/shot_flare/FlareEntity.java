@@ -10,13 +10,18 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import wawa.flares.AllComponents;
+import wawa.flares.AllEntities;
 import wawa.flares.AllItems;
 import wawa.flares.data_component.FlareComponent;
 import wawa.flares.mixinterface.SetRemovedListener;
@@ -32,8 +37,17 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
     private PointLight innerLight;
     public boolean theShadowsCuttingDeeper = false;
     public int color = -1;
-    public FlareEntity(final EntityType<? extends AbstractArrow> entityType, final Level level) {
+    public FlareEntity(final EntityType<FlareEntity> entityType, final Level level) {
         super(entityType, level);
+    }
+
+    public FlareEntity(final Level level, final ItemStack itemStack) {
+        super(AllEntities.FLARE.get(), level);
+        this.setPickupItemStack(itemStack.copyWithCount(1));
+        final FlareComponent component = itemStack.get(AllComponents.FLARE);
+        if (component != null) {
+            this.setTrackable(component.trackable());
+        }
     }
 
     @Override
@@ -71,6 +85,27 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
         if (this.tickCount > 1200) {
             this.discard();
         }
+    }
+
+    @Override
+    public boolean isOnFire() {
+        return true;
+    }
+
+    @Override
+    public boolean displayFireAnimation() {
+        return false;
+    }
+
+    @Override
+    public boolean shouldRenderAtSqrDistance(final double distance) {
+        return true;
+    }
+
+    @Override
+    protected void doKnockback(final LivingEntity entity, final DamageSource damageSource) {
+        super.doKnockback(entity, damageSource);
+        entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, 200, 0));
     }
 
     public static Vec3 extraTickMovement(final Vec3 deltaMovement) {

@@ -32,6 +32,9 @@ public class FlareHandlerClient {
     }
 
     public static void flareEntityTick(final ClientLevel clientLevel, final FlareEntity flare) {
+        if (flare.getRemovalReason() != null) {
+            return;
+        }
         final FlareData data = getFlaresIn(clientLevel).get(flare.getUUID());
         if (data == null) {
             getFlaresIn(clientLevel).put(flare.getUUID(), new FlareData(true, flare));
@@ -77,10 +80,15 @@ public class FlareHandlerClient {
                     if (data.isLoaded()) {
                         return;
                     }
-                    final Vec3 pos = data.getPos().add(
+                    Vec3 pos = data.getPos().add(
                             data.getVel().scale(event.getPartialTick().getGameTimeDeltaTicks())
                     ).subtract(event.getCamera().getPosition());
-                    final float scale = (float) (pos.length() / 64f);
+                    double distance = pos.length();
+                    if (distance > 256) {
+                        pos = pos.normalize().scale(256);
+                        distance = 256;
+                    }
+                    final float scale = (float) (distance / 64f);
                     poseStack.pushPose();
                     poseStack.translate(pos.x, pos.y, pos.z);
                     FlareEntityRenderer.renderFlare(bufferSource, poseStack, data.getLife(), data.getColor(), scale, false);

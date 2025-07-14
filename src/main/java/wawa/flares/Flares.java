@@ -11,10 +11,12 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
+import wawa.flares.item.FlareItem;
 import wawa.flares.shot_flare.FlareHandlerServer;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
@@ -42,6 +44,7 @@ public class Flares {
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(FlareDatagenAssets::onGatherData);
         modEventBus.addListener(FlareDatagenData::onGatherData);
+        modEventBus.addListener(Flares::loadComplete);
 
         neoBus.addListener(FlareHandlerServer::tickFlares);
 
@@ -52,6 +55,10 @@ public class Flares {
         AllPackets.init();
         CREATIVE_MODE_TABS.register(modEventBus);
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+    }
+
+    public static void loadComplete(final FMLLoadCompleteEvent event) {
+        FlareItem.init();
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
