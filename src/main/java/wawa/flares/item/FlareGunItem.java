@@ -4,6 +4,7 @@ import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -108,7 +109,12 @@ public class FlareGunItem extends ProjectileWeaponItem {
         final ChargedProjectiles chargedprojectiles = stack.get(DataComponents.CHARGED_PROJECTILES);
         if (chargedprojectiles != null && !chargedprojectiles.isEmpty()) {
             final ItemStack itemstack = chargedprojectiles.getItems().getFirst();
-            tooltipComponents.add(Component.translatable("item.minecraft.crossbow.projectile").append(CommonComponents.SPACE).append(itemstack.getDisplayName()));
+            final MutableComponent name = itemstack.getDisplayName().copy();
+            final FlareComponent component = itemstack.get(AllComponents.FLARE);
+            if (component != null) {
+                name.withColor(component.argbColor());
+            }
+            tooltipComponents.add(Component.translatable("item.minecraft.crossbow.projectile").append(CommonComponents.SPACE).append(name));
         }
     }
 

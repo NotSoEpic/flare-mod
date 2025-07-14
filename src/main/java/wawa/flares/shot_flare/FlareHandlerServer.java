@@ -62,7 +62,7 @@ public class FlareHandlerServer {
             final DistanceManager distanceManager = level.getChunkSource().chunkMap.getDistanceManager();
             for(final Iterator<Map.Entry<UUID, FlareData>> it = flareMap.entrySet().iterator(); it.hasNext();) {
                 final FlareData flare = it.next().getValue();
-                if (distanceManager.inEntityTickingRange(ChunkPos.asLong(flare.getBlockPos()))) {
+                if (!distanceManager.inEntityTickingRange(ChunkPos.asLong(flare.getBlockPos()))) {
                     flare.setLoaded(false);
                 }
                 if (flare.unloadedTick()) {

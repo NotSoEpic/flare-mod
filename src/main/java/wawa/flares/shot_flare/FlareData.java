@@ -8,7 +8,6 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.phys.Vec3;
-import wawa.flares.Flares;
 
 import java.util.UUID;
 
@@ -90,7 +89,7 @@ public class FlareData {
     public void tickMovement() {
         if (!this.inGround) {
             this.pos = this.pos.add(this.vel);
-            this.vel = this.vel.scale(0.99 * 0.95);
+            this.vel = this.vel.scale(0.99 * 0.95).subtract(0, 0.01, 0);
         }
     }
 

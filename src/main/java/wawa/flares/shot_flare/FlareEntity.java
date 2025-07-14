@@ -4,6 +4,7 @@ import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.light.PointLight;
 import foundry.veil.api.network.VeilPacketManager;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -48,7 +49,16 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
         this.entityData.set(IN_GROUND, this.inGround);
         if (this.isTrackable()) {
             if (!this.inGround) {
-                this.setDeltaMovement(this.getDeltaMovement().scale(0.95));
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.95).subtract(0, 0.01, 0));
+                this.level().addParticle(
+                        ParticleTypes.CAMPFIRE_SIGNAL_SMOKE,
+                        this.getX(),
+                        this.getY(),
+                        this.getZ(),
+                        0,
+                        0.005,
+                        0
+                );
             }
             if (this.level() instanceof final ServerLevel serverLevel) {
                 FlareHandlerServer.flareEntityTick(serverLevel, this);
@@ -98,8 +108,8 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
                         this.innerLight.setBrightness(3f);
                         this.innerLight.setRadius(2.5f);
 
-//                        VeilRenderSystem.renderer().getLightRenderer().addLight(this.outerLight);
-//                        VeilRenderSystem.renderer().getLightRenderer().addLight(this.innerLight);
+                        VeilRenderSystem.renderer().getLightRenderer().addLight(this.outerLight);
+                        VeilRenderSystem.renderer().getLightRenderer().addLight(this.innerLight);
                     }
 
                     this.color = component.argbColor();

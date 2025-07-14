@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -51,12 +52,11 @@ public class FlareEntityRenderer extends EntityRenderer<FlareEntity> {
         final Quaternionf quaternion = new Quaternionf(Minecraft.getInstance().gameRenderer.getMainCamera().rotation());
         final int frameI = tickCount / 10;
         quaternion.rotateZ(frameI);
-        final VertexConsumer vertexConsumer = bufferSource.getBuffer(AllRenderTypes.flareBloom(TEXTURE));
-        renderBillboardedQuad(vertexConsumer, poseStack, quaternion,
+        renderBillboardedQuad(bufferSource.getBuffer(AllRenderTypes.flareBloom(TEXTURE)), poseStack, quaternion,
                 color, scale, 0.25f,
                 0, 0, 1, 0.5f);
         final float glowScale = frameI % 3 * 0.2f + 0.3f;
-        renderBillboardedQuad(vertexConsumer, poseStack, quaternion,
+        renderBillboardedQuad(bufferSource.getBuffer(RenderType.entityTranslucent(TEXTURE)), poseStack, quaternion,
                 color, glowScale * scale, 0.1f,
                 0, 0.5f, 1, 1);}
 

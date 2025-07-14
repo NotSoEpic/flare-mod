@@ -27,11 +27,10 @@ public class AllRenderTypes extends RenderType {
                 .setShaderState(RENDERTYPE_CUTOUT_SHADER)
                 .setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
                 .setLayeringState(POLYGON_OFFSET_LAYERING)
-                .setCullState(NO_CULL)
                 .setLightmapState(LIGHTMAP)
-                .setOverlayState(OVERLAY)
+                .setCullState(NO_CULL)
                 .createCompositeState(true);
-        return VeilRenderType.layered(create(Flares.MODID + ":flare_bloom", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, TRANSIENT_BUFFER_SIZE, true, true, flareBloom), create(Flares.MODID + ":flare_standard", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, TRANSIENT_BUFFER_SIZE, true, true, flare));
+        return VeilRenderType.layered(create(Flares.MODID + ":flare_bloom", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, TRANSIENT_BUFFER_SIZE, true, true, flareBloom), create(Flares.MODID + ":flare_standard", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, TRANSIENT_BUFFER_SIZE, true, true, flare));
     };
 
     public static RenderType flareBloom(final ResourceLocation texture) {
