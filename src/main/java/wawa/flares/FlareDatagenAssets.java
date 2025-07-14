@@ -10,7 +10,6 @@ import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
-@EventBusSubscriber(modid = Flares.MODID, value = Dist.CLIENT)
 public class FlareDatagenAssets {
     public static class Lang extends LanguageProvider {
         public Lang(final PackOutput output) {
@@ -20,10 +19,16 @@ public class FlareDatagenAssets {
         @Override
         protected void addTranslations() {
             this.add("itemGroup.flares", "Flare Guns");
+
             this.add(AllItems.FLARE_GUN.get(), "Flare Gun");
+
+            this.add(AllItems.FLARE_SHELL.get(), "Flare Shell");
+            this.add(AllItems.SIGNALLING_FLARE_SHELL.get(), "Signalling Flare Shell");
+
             this.add(AllItems.FLARE.get(), "Flare");
+            this.add(AllItems.SIGNALLING_FLARE.get(), "Signalling Flare");
+
             this.add(AllEntities.FLARE.get(), "Flare");
-            this.add("flares.tooltip.trackable", "Signalling");
         }
     }
 
@@ -34,7 +39,8 @@ public class FlareDatagenAssets {
 
         @Override
         protected void registerModels() {
-
+            this.basicItem(AllItems.FLARE_SHELL.get());
+            this.basicItem(AllItems.SIGNALLING_FLARE_SHELL.get());
         }
     }
 

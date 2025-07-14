@@ -49,7 +49,7 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
         this.entityData.set(IN_GROUND, this.inGround);
         if (this.isTrackable()) {
             if (!this.inGround) {
-                this.setDeltaMovement(this.getDeltaMovement().scale(0.95).subtract(0, 0.01, 0));
+                this.setDeltaMovement(extraTickMovement(this.getDeltaMovement()));
                 this.level().addParticle(
                         ParticleTypes.CAMPFIRE_SIGNAL_SMOKE,
                         this.getX(),
@@ -70,6 +70,10 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
         if (this.tickCount > 1200) {
             this.discard();
         }
+    }
+
+    public static Vec3 extraTickMovement(final Vec3 deltaMovement) {
+        return deltaMovement.multiply(0.97, 0.95, 0.97).subtract(0, 0.002, 0);
     }
 
     @Override

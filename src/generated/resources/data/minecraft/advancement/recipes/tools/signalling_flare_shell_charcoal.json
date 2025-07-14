@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_flare_gun": {
+      "conditions": {
+        "items": [
+          {
+            "items": "flares:flare_gun"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:signalling_flare_shell_charcoal"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_flare_gun"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:signalling_flare_shell_charcoal"
+    ]
+  }
+}

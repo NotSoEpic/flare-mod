@@ -13,6 +13,7 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import wawa.flares.data_component.FlareComponent;
 import wawa.flares.item.FlareGunItem;
+import wawa.flares.item.FlareItem;
 import wawa.flares.shot_flare.FlareHandlerClient;
 
 @Mod(value = Flares.MODID, dist = Dist.CLIENT)

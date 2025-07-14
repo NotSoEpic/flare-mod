@@ -15,10 +15,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ChargedProjectiles;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
-import wawa.flares.AllComponents;
-import wawa.flares.AllEntities;
-import wawa.flares.AllItems;
-import wawa.flares.Flares;
+import wawa.flares.*;
 import wawa.flares.data_component.FlareComponent;
 import wawa.flares.shot_flare.FlareEntity;
 
@@ -150,7 +147,7 @@ public class FlareGunItem extends ProjectileWeaponItem {
 
     @Override
     public Predicate<ItemStack> getSupportedHeldProjectiles(final ItemStack stack) {
-        return s -> s.is(AllItems.FLARE);
+        return s -> stack.is(AllTags.USABLE_FLARES);
     }
 
     @Override

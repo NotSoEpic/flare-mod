@@ -15,6 +15,7 @@ import java.util.List;
 
 public record FlareComponent(int argbColor, boolean trackable) {
     public static FlareComponent DEFAULT = new FlareComponent(-1, false);
+    public static FlareComponent DEFAULT_SIGNALLING = new FlareComponent(-1, true);
     public static final Codec<FlareComponent> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
                     Codec.INT.fieldOf("color").forGetter(FlareComponent::argbColor),
@@ -27,19 +28,20 @@ public record FlareComponent(int argbColor, boolean trackable) {
     );
 
     public static int tint(final ItemStack stack, final int tintIndex) {
-        if (tintIndex != 1) {
-            return -1;
-        }
         final FlareComponent component = stack.get(AllComponents.FLARE.get());
         if (component != null) {
-            return component.argbColor();
+            if (tintIndex == 1) {
+                return component.argbColor();
+            } else if (tintIndex == 2) {
+                return component.trackable() ? -1 : 0;
+            }
         }
         return -1;
     }
 
     public void appendHoverText(final Item.TooltipContext context, final List<Component> tooltipComponents, final TooltipFlag tooltipFlag) {
-        if (this.trackable) {
-            tooltipComponents.add(Component.translatable("flares.tooltip.trackable"));
-        }
+//        if (this.trackable) {
+//            tooltipComponents.add(Component.translatable("flares.tooltip.trackable"));
+//        }
     }
 }

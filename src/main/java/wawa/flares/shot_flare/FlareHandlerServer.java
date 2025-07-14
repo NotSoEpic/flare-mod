@@ -67,7 +67,7 @@ public class FlareHandlerServer {
                 }
                 if (flare.unloadedTick()) {
                     it.remove();
-                    removed.add(flare.getEntity());
+                    removed.add(flare.getUuid());
                 }
 
                 if (event.getServer().getTickCount() % 20 == 0) {

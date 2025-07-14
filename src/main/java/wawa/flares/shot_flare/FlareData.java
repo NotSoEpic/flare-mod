@@ -17,7 +17,7 @@ public class FlareData {
                     Codec.INT.fieldOf("color").forGetter(FlareData::getColor),
                     Vec3.CODEC.fieldOf("pos").forGetter(FlareData::getPos),
                     Vec3.CODEC.fieldOf("vel").forGetter(FlareData::getVel),
-                    UUIDUtil.CODEC.fieldOf("uuid").forGetter(FlareData::getEntity),
+                    UUIDUtil.CODEC.fieldOf("uuid").forGetter(FlareData::getUuid),
                     Codec.INT.fieldOf("life").forGetter(FlareData::getLife),
                     Codec.BOOL.fieldOf("inGround").forGetter(FlareData::isInGround)
             ).apply(instance, FlareData::new));
@@ -29,25 +29,25 @@ public class FlareData {
     private int color;
     private Vec3 pos;
     private Vec3 vel;
-    private UUID entity;
+    private UUID uuid;
     private int life;
     private boolean inGround;
 
-    public FlareData(final boolean entityLoaded, final FlareEntity entity) {
+    public FlareData(final boolean entityLoaded, final FlareEntity uuid) {
         this.entityLoaded = entityLoaded;
-        this.copyFromEntity(entity);
+        this.copyFromEntity(uuid);
     }
 
-    public FlareData(final int color, final Vec3 pos, final Vec3 vel, final UUID entity, final int life, final boolean inGround) {
-        this(false, color, pos, vel, entity, life, inGround);
+    public FlareData(final int color, final Vec3 pos, final Vec3 vel, final UUID uuid, final int life, final boolean inGround) {
+        this(false, color, pos, vel, uuid, life, inGround);
     }
 
-    public FlareData(final boolean entityLoaded, final int color, final Vec3 pos, final Vec3 vel, final UUID entity, final int life, final boolean inGround) {
+    public FlareData(final boolean entityLoaded, final int color, final Vec3 pos, final Vec3 vel, final UUID uuid, final int life, final boolean inGround) {
         this.entityLoaded = entityLoaded;
         this.color = color;
         this.pos = pos;
         this.vel = vel;
-        this.entity = entity;
+        this.uuid = uuid;
         this.life = life;
         this.inGround = inGround;
     }
@@ -64,7 +64,7 @@ public class FlareData {
         this.color = entity.color;
         this.pos = entity.position();
         this.vel = entity.getDeltaMovement();
-        this.entity = entity.getUUID();
+        this.uuid = entity.getUUID();
         this.life = entity.tickCount;
         this.inGround = entity.inGround();
     }
@@ -89,7 +89,7 @@ public class FlareData {
     public void tickMovement() {
         if (!this.inGround) {
             this.pos = this.pos.add(this.vel);
-            this.vel = this.vel.scale(0.99 * 0.95).subtract(0, 0.01, 0);
+            this.vel = FlareEntity.extraTickMovement(this.vel.scale(0.99));
         }
     }
 
@@ -99,7 +99,7 @@ public class FlareData {
 
     @Override
     public int hashCode() {
-        return this.entity.hashCode();
+        return this.uuid.hashCode();
     }
 
     public int getColor() {
@@ -118,8 +118,8 @@ public class FlareData {
         return this.vel;
     }
 
-    public UUID getEntity() {
-        return this.entity;
+    public UUID getUuid() {
+        return this.uuid;
     }
 
     public int getLife() {

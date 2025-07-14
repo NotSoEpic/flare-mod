@@ -40,14 +40,16 @@ public class Flares {
         final IEventBus neoBus = NeoForge.EVENT_BUS;
 
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(FlareDatagenAssets::onGatherData);
+        modEventBus.addListener(FlareDatagenData::onGatherData);
 
         neoBus.addListener(FlareHandlerServer::tickFlares);
+
         AllComponents.init(modEventBus);
         AllItems.init(modEventBus);
         AllEntities.init(modEventBus);
         AllPackets.init();
         CREATIVE_MODE_TABS.register(modEventBus);
-
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 

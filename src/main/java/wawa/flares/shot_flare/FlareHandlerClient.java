@@ -25,7 +25,7 @@ public class FlareHandlerClient {
     }
 
     public static void addFlare(final ClientLevel clientLevel, final FlareData data) {
-        final FlareData oldData = getFlaresIn(clientLevel).put(data.getEntity(), data);
+        final FlareData oldData = getFlaresIn(clientLevel).put(data.getUuid(), data);
         if (oldData != null && oldData.isLoaded()) {
             data.setLoaded(true);
         }
