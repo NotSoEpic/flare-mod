@@ -57,14 +57,17 @@ public class FlareHandlerClient {
 
     @SubscribeEvent
     public static void tickFlares(final LevelTickEvent.Pre event) {
-        flares.forEach((level, flareMap) -> {
-            for(final Iterator<Map.Entry<UUID, FlareData>> it = flareMap.entrySet().iterator(); it.hasNext();) {
-                final FlareData flare = it.next().getValue();
-                if (flare.unloadedTick()) {
-                    it.remove();
+        if (event.getLevel() instanceof final ClientLevel clientLevel) {
+            final HashMap<UUID, FlareData> flareMap = flares.get(clientLevel);
+            if (flareMap != null) {
+                for (final Iterator<Map.Entry<UUID, FlareData>> it = flareMap.entrySet().iterator(); it.hasNext(); ) {
+                    final FlareData flare = it.next().getValue();
+                    if (flare.unloadedTick()) {
+                        it.remove();
+                    }
                 }
             }
-        });
+        }
     }
 
     @SubscribeEvent

@@ -76,7 +76,11 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
                 );
             }
             if (this.level() instanceof final ServerLevel serverLevel) {
-                FlareHandlerServer.flareEntityTick(serverLevel, this);
+                if (FlareHandlerServer.isRemoved(this.uuid)) {
+                    this.discard();
+                } else {
+                    FlareHandlerServer.flareEntityTick(serverLevel, this);
+                }
             } else if (this.level() instanceof final ClientLevel clientLevel) {
                 FlareHandlerClient.flareEntityTick(clientLevel, this);
             }
@@ -236,11 +240,6 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
         this.setTrackable(compound.getBoolean("Trackable"));
         this.entityData.set(IN_GROUND, this.inGround);
         if (this.level() instanceof final ServerLevel serverLevel) {
-            if (FlareHandlerServer.isRemoved(this.uuid)) {
-                this.remove(RemovalReason.DISCARDED);
-                return;
-            }
-
             final FlareData data = FlareHandlerServer.get(serverLevel, this.uuid);
             if (data != null) {
                 data.applyToEntity(this);

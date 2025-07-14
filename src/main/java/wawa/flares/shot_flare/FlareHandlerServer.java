@@ -5,7 +5,7 @@ import net.minecraft.server.level.DistanceManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import org.jetbrains.annotations.Nullable;
 import wawa.flares.packets.FlareDataPacket;
 
@@ -59,29 +59,32 @@ public class FlareHandlerServer {
     }
 
     @SubscribeEvent
-    public static void tickFlares(final ServerTickEvent.Post event) {
-        flares.forEach((level, flareMap) -> {
-            final ArrayList<FlareDataPacket> packets = new ArrayList<>();
-            final DistanceManager distanceManager = level.getChunkSource().chunkMap.getDistanceManager();
-            for(final Iterator<Map.Entry<UUID, FlareData>> it = flareMap.entrySet().iterator(); it.hasNext();) {
-                final FlareData flare = it.next().getValue();
-                if (!distanceManager.inEntityTickingRange(ChunkPos.asLong(flare.getBlockPos()))) {
-                    flare.setLoaded(false);
-                }
-                if (flare.unloadedTick()) {
-                    it.remove();
-                    removed.add(flare.getUuid());
+    public static void tickFlares(final LevelTickEvent.Pre event) {
+        if (event.getLevel() instanceof final ServerLevel serverLevel) {
+            final HashMap<UUID, FlareData> flareMap = flares.get(serverLevel);
+            if (flareMap != null) {
+                final ArrayList<FlareDataPacket> packets = new ArrayList<>();
+                final DistanceManager distanceManager = serverLevel.getChunkSource().chunkMap.getDistanceManager();
+                for (final Iterator<Map.Entry<UUID, FlareData>> it = flareMap.entrySet().iterator(); it.hasNext(); ) {
+                    final FlareData flare = it.next().getValue();
+                    if (!distanceManager.inEntityTickingRange(ChunkPos.asLong(flare.getBlockPos()))) {
+                        flare.setLoaded(false);
+                    }
+                    if (flare.unloadedTick()) {
+                        it.remove();
+                        removed.add(flare.getUuid());
+                    }
+
+                    if (serverLevel.getServer().getTickCount() % 20 == 0) {
+                        packets.add(new FlareDataPacket(flare));
+                    }
                 }
 
-                if (event.getServer().getTickCount() % 20 == 0) {
-                    packets.add(new FlareDataPacket(flare));
+                if (!packets.isEmpty()) {
+                    final FlareDataPacket[] packetArray = packets.toArray(new FlareDataPacket[0]);
+                    VeilPacketManager.level(serverLevel).sendPacket(packetArray);
                 }
             }
-
-            if (!packets.isEmpty()) {
-                final FlareDataPacket[] packetArray = packets.toArray(new FlareDataPacket[0]);
-                VeilPacketManager.level(level).sendPacket(packetArray);
-            }
-        });
+        }
     }
 }
