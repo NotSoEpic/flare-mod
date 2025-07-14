@@ -87,7 +87,9 @@ public class FlareHandlerClient {
                             data.getVel().scale(event.getPartialTick().getGameTimeDeltaTicks())
                     ).subtract(event.getCamera().getPosition());
                     double distance = pos.length();
-                    if (distance > 256) {
+                    if (distance > 1e6) {
+                        return;
+                    } else if (distance > 256) {
                         pos = pos.normalize().scale(256);
                         distance = 256;
                     }

@@ -32,6 +32,7 @@ public class FlareData {
     private UUID uuid;
     private int life;
     private boolean inGround;
+    private boolean syncable = false;
 
     public FlareData(final boolean entityLoaded, final FlareEntity uuid) {
         this.entityLoaded = entityLoaded;
@@ -58,6 +59,14 @@ public class FlareData {
 
     public boolean isLoaded() {
         return this.entityLoaded;
+    }
+
+    public void setSyncable(final boolean v) {
+        this.syncable = v;
+    }
+
+    public boolean isSyncable() {
+        return this.syncable;
     }
 
     public void copyFromEntity(final FlareEntity entity) {

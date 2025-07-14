@@ -1,8 +1,10 @@
 package wawa.flares.shot_flare;
 
 import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.api.client.render.light.PointLight;
+import foundry.veil.api.client.render.light.data.PointLightData;
+import foundry.veil.api.client.render.light.renderer.LightRenderHandle;
 import foundry.veil.api.network.VeilPacketManager;
+import foundry.veil.impl.client.render.light.InstancedPointLightRenderer;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -33,8 +35,8 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
     private static final EntityDataAccessor<ItemStack> FLARE_ITEM = SynchedEntityData.defineId(FlareEntity.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<Boolean> IN_GROUND = SynchedEntityData.defineId(FlareEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> TRACKABLE = SynchedEntityData.defineId(FlareEntity.class, EntityDataSerializers.BOOLEAN);
-    private PointLight outerLight;
-    private PointLight innerLight;
+    private LightRenderHandle<PointLightData> outerLight;
+    private LightRenderHandle<PointLightData> innerLight;
     public boolean theShadowsCuttingDeeper = false;
     public int color = -1;
     public FlareEntity(final EntityType<FlareEntity> entityType, final Level level) {
@@ -143,22 +145,22 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
                 if (component != null) {
                     if (this.outerLight == null) {
                         this.theShadowsCuttingDeeper = component.isDarkerThanDark();
-                        this.outerLight = new PointLight();
-                        this.outerLight.setPosition(this.getX(), this.getY(), this.getZ());
-                        this.outerLight.setBrightness(this.theShadowsCuttingDeeper ? -1f : 1f);
-                        this.outerLight.setRadius(25.0f);
+                        final PointLightData outerLight = new PointLightData();
+                        outerLight.setPosition(this.getX(), this.getY(), this.getZ());
+                        outerLight.setBrightness(this.theShadowsCuttingDeeper ? -1f : 1f);
+                        outerLight.setRadius(25.0f);
 
-                        this.innerLight = new PointLight();
-                        this.innerLight.setPosition(this.getX(), this.getY(), this.getZ());
-                        this.innerLight.setBrightness(this.theShadowsCuttingDeeper ? -3f : 3f);
-                        this.innerLight.setRadius(2.5f);
+                        final PointLightData innerLight = new PointLightData();
+                        innerLight.setPosition(this.getX(), this.getY(), this.getZ());
+                        innerLight.setBrightness(this.theShadowsCuttingDeeper ? -3f : 3f);
+                        innerLight.setRadius(2.5f);
 
                         this.color = component.argbColor();
-                        this.outerLight.setColor(this.color);
-                        this.innerLight.setColor(this.color);
+                        outerLight.setColor(this.color);
+                        innerLight.setColor(this.color);
 
-                        VeilRenderSystem.renderer().getLightRenderer().addLight(this.outerLight);
-                        VeilRenderSystem.renderer().getLightRenderer().addLight(this.innerLight);
+                        this.outerLight = VeilRenderSystem.renderer().getLightRenderer().addLight(outerLight);
+                        this.innerLight = VeilRenderSystem.renderer().getLightRenderer().addLight(innerLight);
                     }
                 }
 
@@ -177,24 +179,26 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
     public void onClientRemoval() {
         super.onClientRemoval();
         if (this.outerLight != null) {
-            VeilRenderSystem.renderer().getLightRenderer().removeLight(this.outerLight);
-            VeilRenderSystem.renderer().getLightRenderer().removeLight(this.innerLight);
+            this.outerLight.free();
+            this.innerLight.free();
         }
     }
 
     public void updateLight(final float partialTick) {
         final Vec3 pos = this.getPosition(partialTick);
         if (this.outerLight != null) {
-            this.outerLight.setPosition(pos.x, pos.y, pos.z);
-            this.innerLight.setPosition(pos.x, pos.y, pos.z);
+            final PointLightData outerLight = this.outerLight.getLightData();
+            final PointLightData innerLight = this.innerLight.getLightData();
+            outerLight.setPosition(pos.x, pos.y, pos.z);
+            innerLight.setPosition(pos.x, pos.y, pos.z);
             if (this.tickCount > 800) {
                 float brightness = (1200f - this.tickCount) / (1200f - 800f);
                 if (this.theShadowsCuttingDeeper) {
                     brightness *= -1;
                 }
-                this.outerLight.setBrightness(brightness);
-                this.outerLight.setRadius(25 * brightness);
-                this.innerLight.setBrightness(brightness * 3);
+                outerLight.setBrightness(brightness);
+                outerLight.setRadius(25 * brightness);
+                innerLight.setBrightness(brightness * 3);
             }
         }
     }

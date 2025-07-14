@@ -52,6 +52,7 @@ public class FlareEntityRenderer extends EntityRenderer<FlareEntity> {
                                    final int tickCount, final int color, final float scale,
                                    final boolean normal) {
         final Quaternionf quaternion = new Quaternionf(Minecraft.getInstance().gameRenderer.getMainCamera().rotation());
+//        quaternion.div(poseStack.last().pose().getNormalizedRotation(new Quaternionf())); // todo sable compat when i figure out how quaternions work
         final int frameI = tickCount / 10;
         if (normal) {
             renderBillboardedQuad(bufferSource.getBuffer(RenderType.entityCutout(TEXTURE2)), poseStack, quaternion,

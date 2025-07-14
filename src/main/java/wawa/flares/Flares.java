@@ -54,7 +54,6 @@ public class Flares {
         AllEntities.init(modEventBus);
         AllPackets.init();
         CREATIVE_MODE_TABS.register(modEventBus);
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     public static void loadComplete(final FMLLoadCompleteEvent event) {
