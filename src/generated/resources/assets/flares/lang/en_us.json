@@ -1,5 +1,7 @@
 {
   "entity.flares.flare": "Flare",
+  "flares.configuration.do_bloom": "Enable Bloom",
+  "flares.configuration.do_dynamic_lights": "Enable Dynamic Lights",
   "item.flares.flare_gun": "Flare Gun",
   "item.flares.illumination_flare": "Illumination Flare",
   "item.flares.illumination_flare_shell": "Illumination Flare Shell",

@@ -12,6 +12,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import wawa.flares.AllComponents;
 import wawa.flares.AllItems;
+import wawa.flares.FlareConfig;
 import wawa.flares.data_component.FlareComponent;
 import wawa.flares.shot_flare.FlareEntity;
 
@@ -27,6 +28,9 @@ public class FlareItem extends Item implements ProjectileItem {
         final FlareComponent component = stack.get(AllComponents.FLARE);
         if (component != null) {
             component.appendHoverText(context, tooltipComponents, tooltipFlag);
+            if (!component.trackable() && !FlareConfig.CONFIG.doDynamicLights.get()) {
+                tooltipComponents.add(Component.literal("kinda useless because dynamic lights are off :c"));
+            }
         }
     }
 

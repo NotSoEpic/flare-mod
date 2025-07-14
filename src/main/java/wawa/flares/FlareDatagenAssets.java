@@ -27,6 +27,9 @@ public class FlareDatagenAssets {
             this.add(AllItems.SIGNALLING_FLARE.get(), "Signalling Flare");
 
             this.add(AllEntities.FLARE.get(), "Flare");
+
+            this.add("flares.configuration.do_bloom", "Enable Bloom");
+            this.add("flares.configuration.do_dynamic_lights", "Enable Dynamic Lights");
         }
     }
 

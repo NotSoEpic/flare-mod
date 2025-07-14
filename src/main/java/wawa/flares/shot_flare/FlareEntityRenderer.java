@@ -11,9 +11,6 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -21,7 +18,6 @@ import wawa.flares.AllEntities;
 import wawa.flares.AllRenderTypes;
 import wawa.flares.Flares;
 
-@EventBusSubscriber(modid = Flares.MODID, value = Dist.CLIENT)
 public class FlareEntityRenderer extends EntityRenderer<FlareEntity> {
     public static ResourceLocation TEXTURE = Flares.resource("textures/entity/flare/sparkle.png");
     public static ResourceLocation TEXTURE2 = Flares.resource("textures/entity/flare/normal_flare.png");
@@ -96,7 +92,6 @@ public class FlareEntityRenderer extends EntityRenderer<FlareEntity> {
                 .setNormal(pose, 0f, 1f, 0f);
     }
 
-    @SubscribeEvent
     public static void registerRenderer(final EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(AllEntities.FLARE.get(), FlareEntityRenderer::new);
     }

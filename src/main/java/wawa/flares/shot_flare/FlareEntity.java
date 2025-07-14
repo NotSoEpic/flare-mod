@@ -24,6 +24,7 @@ import net.minecraft.world.phys.Vec3;
 import wawa.flares.AllComponents;
 import wawa.flares.AllEntities;
 import wawa.flares.AllItems;
+import wawa.flares.FlareConfig;
 import wawa.flares.data_component.FlareComponent;
 import wawa.flares.mixinterface.SetRemovedListener;
 import wawa.flares.packets.FlareKillPacket;
@@ -114,7 +115,7 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
     }
 
     public static Vec3 extraTickMovement(final Vec3 deltaMovement) {
-        return deltaMovement.multiply(0.97, 0.95, 0.97).subtract(0, 0.002, 0);
+        return deltaMovement.multiply(0.99, 0.99, 0.99).subtract(0, 0.001, 0);
     }
 
     @Override
@@ -142,8 +143,9 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
             if (dataValue.id() == FLARE_ITEM.id()) {
                 final FlareComponent component = ((ItemStack)dataValue.value()).get(AllComponents.FLARE);
                 if (component != null) {
-                    if (this.outerLight == null) {
-                        this.theShadowsCuttingDeeper = component.isDarkerThanDark();
+                    this.color = component.argbColor();
+                    this.theShadowsCuttingDeeper = component.isDarkerThanDark();
+                    if (FlareConfig.CONFIG.doDynamicLights.get() && this.outerLight == null) {
                         final PointLightData outerLight = new PointLightData();
                         outerLight.setPosition(this.getX(), this.getY(), this.getZ());
                         outerLight.setBrightness(this.theShadowsCuttingDeeper ? -1f : 1f);
@@ -154,7 +156,6 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
                         innerLight.setBrightness(this.theShadowsCuttingDeeper ? -3f : 3f);
                         innerLight.setRadius(2.5f);
 
-                        this.color = component.argbColor();
                         outerLight.setColor(this.color);
                         innerLight.setColor(this.color);
 

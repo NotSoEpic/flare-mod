@@ -33,7 +33,12 @@ public class AllRenderTypes extends RenderType {
         return VeilRenderType.layered(create(Flares.MODID + ":flare_bloom", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, TRANSIENT_BUFFER_SIZE, true, true, flareBloom), create(Flares.MODID + ":flare_standard", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, TRANSIENT_BUFFER_SIZE, true, true, flare));
     };
 
+    // todo figure out why bloom is causing terrain to flicker black??
     public static RenderType flareBloom(final ResourceLocation texture) {
-        return FLARE_BLOOM.apply(texture);
+        if (FlareConfig.CONFIG.doBloom.get()) {
+            return FLARE_BLOOM.apply(texture);
+        } else {
+            return entityTranslucent(texture);
+        }
     }
 }
