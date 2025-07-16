@@ -280,11 +280,8 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
                     FlareHandlerServer.get(serverLevel).remove(this.uuid);
                 }
             } else if (this.level() instanceof final ClientLevel clientLevel) {
-                if (reason.shouldSave()) {
-                    FlareHandlerClient.setUnloaded(clientLevel, this.uuid);
-                } else {
-                    FlareHandlerClient.remove(clientLevel, this.uuid);
-                }
+                // clientside reason is always discarded, but will be readded with server syncing
+                FlareHandlerClient.remove(clientLevel, this.uuid);
             }
         }
     }
