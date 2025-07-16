@@ -72,7 +72,7 @@ public class FlareDyeRecipe extends CustomRecipe {
         return shells > 0 ? this.mixDyesIntoResult(dyes, shells) : ItemStack.EMPTY;
     }
 
-    public static int mixFireworkDyes(final ArrayList<DyeItem> dyes) {
+    public static int mixTextDyes(final ArrayList<DyeItem> dyes) {
         if (dyes.isEmpty()) {
             return 0;
         }
@@ -84,7 +84,7 @@ public class FlareDyeRecipe extends CustomRecipe {
         int i1 = 0;
 
         for (final DyeItem dyeitem : dyes) {
-            final int j3 = dyeitem.getDyeColor().getFireworkColor();
+            final int j3 = dyeitem.getDyeColor().getTextureDiffuseColor();
             final int i2 = FastColor.ARGB32.red(j3);
             final int j2 = FastColor.ARGB32.green(j3);
             final int k2 = FastColor.ARGB32.blue(j3);
@@ -107,7 +107,7 @@ public class FlareDyeRecipe extends CustomRecipe {
     }
 
     private ItemStack mixDyesIntoResult(final ArrayList<DyeItem> dyes, final int shells) {
-        final int color = mixFireworkDyes(dyes);
+        final int color = mixTextDyes(dyes);
         if (color == 0) {
             return ItemStack.EMPTY;
         }

@@ -22,12 +22,12 @@ public class AllItems {
         output.accept(SIGNALLING_FLARE_SHELL.get());
         for (final DyeColor color : DyeColor.values()) {
             final ItemStack stack = FLARE.toStack();
-            stack.set(AllComponents.FLARE.get(), new FlareComponent(color.getFireworkColor() | 0xFF000000, false));
+            stack.set(AllComponents.FLARE.get(), new FlareComponent(color.getTextureDiffuseColor() | 0xFF000000, false));
             output.accept(stack);
         }
         for (final DyeColor color : DyeColor.values()) {
             final ItemStack stack = SIGNALLING_FLARE.toStack();
-            stack.set(AllComponents.FLARE.get(), new FlareComponent(color.getFireworkColor() | 0xFF000000, true));
+            stack.set(AllComponents.FLARE.get(), new FlareComponent(color.getTextureDiffuseColor() | 0xFF000000, true));
             output.accept(stack);
         }
     }

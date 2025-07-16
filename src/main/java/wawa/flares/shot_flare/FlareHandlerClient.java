@@ -3,6 +3,7 @@ package wawa.flares.shot_flare;
 import com.mojang.blaze3d.vertex.PoseStack;
 import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.shader.program.ShaderProgram;
+import foundry.veil.api.client.render.shader.uniform.ShaderUniform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -85,7 +86,10 @@ public class FlareHandlerClient {
         final ShaderProgram shader = VeilRenderSystem.setShader(FLARE_BLOOM_SHADER);
         if (shader != null) {
             shader.bind();
-            shader.getUniform("bloom").setFloat(FlareConfig.CONFIG.bloomIntensity.get().floatValue());
+            final ShaderUniform bloom = shader.getUniform("bloom");
+            if (bloom != null) {
+                bloom.setFloat(FlareConfig.CONFIG.bloomIntensity.get().floatValue());
+            }
         }
 
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_WEATHER) {
@@ -107,7 +111,7 @@ public class FlareHandlerClient {
                     }
                     poseStack.pushPose();
                     poseStack.translate(pos.x, pos.y, pos.z);
-                    FlareEntityRenderer.renderFlare(bufferSource, poseStack, data.getLife() + partialTick, data.getMaxLife(), true, data.getColor(), 1, false);
+                    FlareEntityRenderer.renderFlare(bufferSource, poseStack, data.getLife() + partialTick, data.getMaxLife(), true, data.getColor(), 1);
                     poseStack.popPose();
                 });
             }

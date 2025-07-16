@@ -29,7 +29,7 @@ public record FlareComponent(int argbColor, boolean trackable) {
     );
 
     public boolean isDarkerThanDark() {
-        return this.argbColor == (DyeColor.BLACK.getFireworkColor() | 0xFF000000);
+        return this.argbColor == (DyeColor.BLACK.getTextureDiffuseColor() | 0xFF000000);
     }
 
     public static int tint(final ItemStack stack, final int tintIndex) {
