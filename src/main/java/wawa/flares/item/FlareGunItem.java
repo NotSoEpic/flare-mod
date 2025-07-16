@@ -123,7 +123,7 @@ public class FlareGunItem extends ProjectileWeaponItem {
         final ChargedProjectiles chargedprojectiles = weapon.set(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.EMPTY);
         if (chargedprojectiles != null && !chargedprojectiles.isEmpty() &&
                 level instanceof final ServerLevel serverlevel) {
-            this.shoot(serverlevel, shooter, shooter.getUsedItemHand(), weapon, chargedprojectiles.getItems(), 3.0F, 6.0F, true, null);
+            this.shoot(serverlevel, shooter, shooter.getUsedItemHand(), weapon, chargedprojectiles.getItems(), 3.0F, 3.0F, true, null);
         }
     }
 

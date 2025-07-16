@@ -33,6 +33,7 @@ import java.util.List;
 
 public class FlareEntity extends AbstractArrow implements SetRemovedListener {
     private static final EntityDataAccessor<ItemStack> FLARE_ITEM = SynchedEntityData.defineId(FlareEntity.class, EntityDataSerializers.ITEM_STACK);
+    private static final EntityDataAccessor<Integer> TICK_COUNT = SynchedEntityData.defineId(FlareEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> IN_GROUND = SynchedEntityData.defineId(FlareEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> TRACKABLE = SynchedEntityData.defineId(FlareEntity.class, EntityDataSerializers.BOOLEAN);
     private LightRenderHandle<PointLightData> outerLight;
@@ -56,6 +57,7 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
     protected void defineSynchedData(final SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(FLARE_ITEM, AllItems.FLARE.toStack());
+        builder.define(TICK_COUNT, 0);
         builder.define(IN_GROUND, false);
         builder.define(TRACKABLE, false);
     }
@@ -67,6 +69,15 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
         if (this.isTrackable()) {
             if (!this.inGround) {
                 this.setDeltaMovement(extraTickMovement(this.getDeltaMovement()));
+            }
+            if (this.level() instanceof final ServerLevel serverLevel) {
+                if (FlareHandlerServer.get(serverLevel).isRemoved(this.uuid)) {
+                    this.discard();
+                } else {
+                    FlareHandlerServer.get(serverLevel).flareEntityTick(serverLevel, this);
+                }
+            } else if (this.level() instanceof final ClientLevel clientLevel) {
+                FlareHandlerClient.flareEntityTick(clientLevel, this);
                 this.level().addParticle(
                         ParticleTypes.CAMPFIRE_SIGNAL_SMOKE,
                         this.getX(),
@@ -77,20 +88,17 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
                         0
                 );
             }
-            if (this.level() instanceof final ServerLevel serverLevel) {
-                if (FlareHandlerServer.get(serverLevel).isRemoved(this.uuid)) {
-                    this.discard();
-                } else {
-                    FlareHandlerServer.get(serverLevel).flareEntityTick(serverLevel, this);
-                }
-            } else if (this.level() instanceof final ClientLevel clientLevel) {
-                FlareHandlerClient.flareEntityTick(clientLevel, this);
-            }
         }
-        this.tickCount++;
+
+        this.syncTickCount(this.tickCount);
         if (this.tickCount > 1200) {
             this.discard();
         }
+    }
+
+    private void syncTickCount(final int v) {
+        this.tickCount = v;
+        this.getEntityData().set(TICK_COUNT, v);
     }
 
     @Override
@@ -165,6 +173,8 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
                 }
 
                 return;
+            } else if (dataValue.id() == TICK_COUNT.id()) {
+                this.tickCount = (int)dataValue.value();
             } else if (dataValue.id() == IN_GROUND.id()) {
                 this.inGround = (boolean)dataValue.value();
             } else if (dataValue.id() == TRACKABLE.id()) {
@@ -184,6 +194,15 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
         }
     }
 
+    public static float getIntensity(final float tickCount/*, final int maxLife*/) {
+        if (tickCount < 100) {
+            return tickCount / 100;
+        } else if (tickCount > 800) {
+            return (1200f - tickCount) / (1200f - 800f);
+        }
+        return 1;
+    }
+
     public void updateLight(final float partialTick) {
         final Vec3 pos = this.getPosition(partialTick);
         if (this.outerLight != null) {
@@ -191,15 +210,13 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
             final PointLightData innerLight = this.innerLight.getLightData();
             outerLight.setPosition(pos.x, pos.y, pos.z);
             innerLight.setPosition(pos.x, pos.y, pos.z);
-            if (this.tickCount > 800) {
-                float brightness = (1200f - this.tickCount) / (1200f - 800f);
-                if (this.theShadowsCuttingDeeper) {
-                    brightness *= -1;
-                }
-                outerLight.setBrightness(brightness);
-                outerLight.setRadius(25 * brightness);
-                innerLight.setBrightness(brightness * 3);
+            float brightness = getIntensity(this.tickCount);
+            if (this.theShadowsCuttingDeeper) {
+                brightness *= -1;
             }
+            outerLight.setBrightness(brightness);
+            outerLight.setRadius(25 * brightness);
+            innerLight.setBrightness(brightness * 3);
         }
     }
 

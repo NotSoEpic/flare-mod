@@ -28,8 +28,14 @@ public class FlareDatagenAssets {
 
             this.add(AllEntities.FLARE.get(), "Flare");
 
-            this.add("flares.configuration.do_bloom", "Enable Bloom");
-            this.add("flares.configuration.do_dynamic_lights", "Enable Dynamic Lights");
+            this.addConfig("do_bloom", "Enable Bloom", "");
+            this.addConfig("bloom_intensity", "Bloom Intensity", "Don't set this to 11");
+            this.addConfig("do_dynamic_lights", "Enable Dynamic Lights", "I'm lazy though this will only affect newly spawned flares");
+        }
+
+        private void addConfig(final String id, final String name, final String tooltip) {
+            this.add("flares.configuration." + id, name);
+            this.add("flares.configuration." + id + ".tooltip", tooltip);
         }
     }
 

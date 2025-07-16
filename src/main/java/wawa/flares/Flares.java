@@ -9,11 +9,8 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
-import net.neoforged.neoforge.client.gui.ConfigurationScreen;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -56,9 +53,6 @@ public class Flares {
         AllEntities.init(modEventBus);
         AllPackets.init();
         CREATIVE_MODE_TABS.register(modEventBus);
-
-        modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
-        modContainer.registerConfig(ModConfig.Type.CLIENT, FlareConfig.CONFIG_SPEC);
     }
 
     public static void loadComplete(final FMLLoadCompleteEvent event) {

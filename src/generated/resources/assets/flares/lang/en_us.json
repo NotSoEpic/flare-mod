@@ -1,7 +1,11 @@
 {
   "entity.flares.flare": "Flare",
+  "flares.configuration.bloom_intensity": "Bloom Intensity",
+  "flares.configuration.bloom_intensity.tooltip": "Don't set this to 11",
   "flares.configuration.do_bloom": "Enable Bloom",
+  "flares.configuration.do_bloom.tooltip": "",
   "flares.configuration.do_dynamic_lights": "Enable Dynamic Lights",
+  "flares.configuration.do_dynamic_lights.tooltip": "I'm lazy though this will only affect newly spawned flares",
   "item.flares.flare_gun": "Flare Gun",
   "item.flares.illumination_flare": "Illumination Flare",
   "item.flares.illumination_flare_shell": "Illumination Flare Shell",
