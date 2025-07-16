@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -37,15 +36,15 @@ public class FlareEntityRenderer extends EntityRenderer<FlareEntity> {
 
     @Override
     public void render(final FlareEntity entity, final float entityYaw, final float partialTick, final PoseStack poseStack, final MultiBufferSource bufferSource, final int packedLight) {
-        if (entity.tickCount > 1200) {
+        if (entity.tickCount > entity.getMaxAge()) {
             return;
         }
         entity.updateLight(partialTick);
-        renderFlare(bufferSource, poseStack, entity.tickCount + partialTick, entity.color, 1, entity.theShadowsCuttingDeeper && entity.getRandom().nextFloat() < 0.0001);
+        renderFlare(bufferSource, poseStack, entity.tickCount + partialTick, entity.getMaxAge(), entity.isTrackable(), entity.color, 1, entity.theShadowsCuttingDeeper && entity.getRandom().nextFloat() < 0.0001);
     }
 
     public static void renderFlare(final MultiBufferSource bufferSource, final PoseStack poseStack,
-                                   final float tickCount, final int color, final float scale,
+                                   final float tickCount, final int maxAge, final boolean trackable, final int color, final float scale,
                                    final boolean normal) {
         final Quaternionf quaternion = new Quaternionf(Minecraft.getInstance().gameRenderer.getMainCamera().rotation());
 //        quaternion.div(poseStack.last().pose().getNormalizedRotation(new Quaternionf())); // todo sable compat when i figure out how quaternions work
@@ -58,10 +57,10 @@ public class FlareEntityRenderer extends EntityRenderer<FlareEntity> {
             len = 256;
         }
         final float scaledScale = scale * (1 + len / 64);
-        final float scaledScaleScaled = scaledScale * FlareEntity.getIntensity(tickCount);
+        final float scaledScaleScaled = scaledScale * FlareEntity.getIntensity(trackable, tickCount, maxAge);
         final int frameI = (int) (tickCount) / 10;
         if (normal) {
-            renderBillboardedQuad(bufferSource.getBuffer(RenderType.entityCutout(TEXTURE2)), poseStack, quaternion,
+            renderBillboardedQuad(bufferSource.getBuffer(AllRenderTypes.flare(TEXTURE2)), poseStack, quaternion,
                     -1, scaledScaleScaled, 0.25f,
                     0, 0, 1, 1);
         } else {
@@ -70,7 +69,7 @@ public class FlareEntityRenderer extends EntityRenderer<FlareEntity> {
                     color, scaledScaleScaled, 0.25f,
                     0, 0, 1, 0.5f);
             final float glowScale = frameI % 3 * 0.2f + 0.3f;
-            renderBillboardedQuad(bufferSource.getBuffer(RenderType.entityTranslucent(TEXTURE)), poseStack, quaternion,
+            renderBillboardedQuad(bufferSource.getBuffer(AllRenderTypes.flare(TEXTURE)), poseStack, quaternion,
                     color, glowScale * scaledScaleScaled, 0.1f,
                     0, 0.5f, 1, 1);
         }

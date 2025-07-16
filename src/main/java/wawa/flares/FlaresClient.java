@@ -26,7 +26,6 @@ public class FlaresClient {
 
         neoBus.addListener(FlareHandlerClient::tickFlares);
         neoBus.addListener(FlareHandlerClient::renderFlares);
-        modEventBus.addListener(FlareHandlerClient::modConfigReload);
 
         modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
         modContainer.registerConfig(ModConfig.Type.CLIENT, FlareConfig.CONFIG_SPEC);

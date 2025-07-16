@@ -34,6 +34,7 @@ import java.util.List;
 public class FlareEntity extends AbstractArrow implements SetRemovedListener {
     private static final EntityDataAccessor<ItemStack> FLARE_ITEM = SynchedEntityData.defineId(FlareEntity.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<Integer> TICK_COUNT = SynchedEntityData.defineId(FlareEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> MAX_AGE = SynchedEntityData.defineId(FlareEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> IN_GROUND = SynchedEntityData.defineId(FlareEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> TRACKABLE = SynchedEntityData.defineId(FlareEntity.class, EntityDataSerializers.BOOLEAN);
     private LightRenderHandle<PointLightData> outerLight;
@@ -50,6 +51,7 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
         final FlareComponent component = itemStack.get(AllComponents.FLARE);
         if (component != null) {
             this.setTrackable(component.trackable());
+            this.setMaxAge(component.trackable() ? 2400 : 6000);
         }
     }
 
@@ -58,6 +60,7 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
         super.defineSynchedData(builder);
         builder.define(FLARE_ITEM, AllItems.FLARE.toStack());
         builder.define(TICK_COUNT, 0);
+        builder.define(MAX_AGE, 2400);
         builder.define(IN_GROUND, false);
         builder.define(TRACKABLE, false);
     }
@@ -91,7 +94,7 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
         }
 
         this.syncTickCount(this.tickCount);
-        if (this.tickCount > 1200) {
+        if (this.tickCount > this.getMaxAge()) {
             this.discard();
         }
     }
@@ -145,6 +148,14 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
         this.entityData.set(TRACKABLE, v);
     }
 
+    public int getMaxAge() {
+        return this.entityData.get(MAX_AGE);
+    }
+
+    public void setMaxAge(final int maxAge) {
+        this.entityData.set(MAX_AGE, maxAge);
+    }
+
     @Override
     public void onSyncedDataUpdated(final List<SynchedEntityData.DataValue<?>> dataValues) {
         for (final SynchedEntityData.DataValue<?> dataValue : dataValues) {
@@ -194,11 +205,19 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
         }
     }
 
-    public static float getIntensity(final float tickCount/*, final int maxLife*/) {
-        if (tickCount < 100) {
-            return tickCount / 100;
-        } else if (tickCount > 800) {
-            return (1200f - tickCount) / (1200f - 800f);
+    public static float getIntensity(final boolean trackable, final float tickCount, final int maxAge) {
+        if (trackable) {
+            if (tickCount < 100) {
+                return tickCount / 100;
+            } else if (tickCount > (maxAge - 400)) {
+                return (maxAge - tickCount) / 400f;
+            }
+        } else {
+            if (tickCount < 5) {
+                return tickCount / 5;
+            } else if (tickCount > (maxAge - 1200)) {
+                return (maxAge - tickCount) / 1200f;
+            }
         }
         return 1;
     }
@@ -210,7 +229,7 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
             final PointLightData innerLight = this.innerLight.getLightData();
             outerLight.setPosition(pos.x, pos.y, pos.z);
             innerLight.setPosition(pos.x, pos.y, pos.z);
-            float brightness = getIntensity(this.tickCount);
+            float brightness = getIntensity(this.isTrackable(), this.tickCount, this.getMaxAge());
             if (this.theShadowsCuttingDeeper) {
                 brightness *= -1;
             }
@@ -228,7 +247,7 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
     @Override
     public void setPickupItemStack(final ItemStack pickupItemStack) {
         super.setPickupItemStack(pickupItemStack);
-        this.setSyncedStack(pickupItemStack);
+        this.setSyncedStack(this.getPickupItem());
     }
 
     private void setSyncedStack(final ItemStack stack) {
@@ -236,6 +255,7 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
         final FlareComponent component = stack.get(AllComponents.FLARE);
         if (component != null) {
             this.color = component.argbColor();
+            this.setTrackable(component.trackable());
         }
     }
 
@@ -251,6 +271,7 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
     public void addAdditionalSaveData(final CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("TickCount", this.tickCount);
+        compound.putInt("MaxAge", this.getMaxAge());
         compound.putBoolean("Trackable", this.isTrackable());
     }
 
@@ -258,6 +279,7 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
     public void readAdditionalSaveData(final CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.tickCount = compound.getInt("TickCount");
+        this.setMaxAge(compound.getInt("MaxAge"));
         this.setTrackable(compound.getBoolean("Trackable"));
         this.entityData.set(IN_GROUND, this.inGround);
         if (this.level() instanceof final ServerLevel serverLevel) {

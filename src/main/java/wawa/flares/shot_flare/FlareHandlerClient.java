@@ -5,13 +5,11 @@ import foundry.veil.api.client.render.VeilRenderSystem;
 import foundry.veil.api.client.render.shader.program.ShaderProgram;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import wawa.flares.FlareConfig;
@@ -82,25 +80,17 @@ public class FlareHandlerClient {
     }
 
     private static final ResourceLocation FLARE_BLOOM_SHADER = Flares.resource("flare_bloom");
-    public static void modConfigReload(final ModConfigEvent.Reloading event) {
-        uploadUniform = true;
-    }
-    private static boolean uploadUniform = true;
-
     @SubscribeEvent
     public static void renderFlares(final RenderLevelStageEvent event) {
-        if (true) {
-            uploadUniform = false;
-            final ShaderProgram shader = VeilRenderSystem.setShader(FLARE_BLOOM_SHADER);
-            if (shader != null) {
-                shader.bind();
-                shader.getUniform("bloom").setFloat(FlareConfig.CONFIG.bloomIntensity.get().floatValue());
-            }
+        final ShaderProgram shader = VeilRenderSystem.setShader(FLARE_BLOOM_SHADER);
+        if (shader != null) {
+            shader.bind();
+            shader.getUniform("bloom").setFloat(FlareConfig.CONFIG.bloomIntensity.get().floatValue());
         }
+
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_WEATHER) {
             final HashMap<UUID, FlareData> renderable = flares.get(Minecraft.getInstance().level);
             if (renderable != null) {
-                FogRenderer.setupNoFog();
                 final float partialTick = event.getPartialTick().getGameTimeDeltaTicks();
                 final PoseStack poseStack = event.getPoseStack();
                 final MultiBufferSource.BufferSource bufferSource = ((LevelRendererGetter)event.getLevelRenderer()).getBuffers().bufferSource();
@@ -117,12 +107,9 @@ public class FlareHandlerClient {
                     }
                     poseStack.pushPose();
                     poseStack.translate(pos.x, pos.y, pos.z);
-                    FlareEntityRenderer.renderFlare(bufferSource, poseStack, data.getLife() + partialTick, data.getColor(), 1, false);
+                    FlareEntityRenderer.renderFlare(bufferSource, poseStack, data.getLife() + partialTick, data.getMaxLife(), true, data.getColor(), 1, false);
                     poseStack.popPose();
                 });
-                // sucks to suck i guess boowomp
-                // FogRenderer.setupFog(event.getCamera(), FogRenderer.FogMode.FOG_TERRAIN, Math.max(f1, 32.0F), flag1, f);
-                bufferSource.endBatch();
             }
         }
     }

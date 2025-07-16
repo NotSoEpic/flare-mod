@@ -33,45 +33,43 @@ public class FlareDyeRecipe extends CustomRecipe {
         return this.result.copy();
     }
 
+    public ItemStack getResult(final int count) {
+        return this.result.copyWithCount(count);
+    }
+
     @Override
     public boolean matches(final CraftingInput input, final Level level) {
-        boolean hasShell = false;
+        int shells = 0;
         for (final ItemStack item : input.items()) {
             if (item.isEmpty()) {
                 continue;
             }
             if (this.getShell().test(item)) {
-                if (hasShell) {
-                    return false;
-                }
-                hasShell = true;
+                shells++;
             } else if (!(item.getItem() instanceof DyeItem)) {
                 return false;
             }
         }
-        return true;
+        return shells > 0;
     }
 
     @Override
     public ItemStack assemble(final CraftingInput input, final HolderLookup.Provider registries) {
-        boolean hasShell = false;
+        int shells = 0;
         final ArrayList<DyeItem> dyes = new ArrayList<>();
         for (final ItemStack item : input.items()) {
             if (item.isEmpty()) {
                 continue;
             }
             if (this.getShell().test(item)) {
-                if (hasShell) {
-                    return ItemStack.EMPTY;
-                }
-                hasShell = true;
+                shells++;
             } else if (item.getItem() instanceof final DyeItem dyeItem) {
                 dyes.add(dyeItem);
             } else {
                 return ItemStack.EMPTY;
             }
         }
-        return hasShell ? this.mixDyesIntoResult(dyes) : ItemStack.EMPTY;
+        return shells > 0 ? this.mixDyesIntoResult(dyes, shells) : ItemStack.EMPTY;
     }
 
     public static int mixFireworkDyes(final ArrayList<DyeItem> dyes) {
@@ -108,13 +106,13 @@ public class FlareDyeRecipe extends CustomRecipe {
         return FastColor.ARGB32.color(255, l2, i3, k3);
     }
 
-    private ItemStack mixDyesIntoResult(final ArrayList<DyeItem> dyes) {
+    private ItemStack mixDyesIntoResult(final ArrayList<DyeItem> dyes, final int shells) {
         final int color = mixFireworkDyes(dyes);
         if (color == 0) {
             return ItemStack.EMPTY;
         }
 
-        final ItemStack result = this.getResult();
+        final ItemStack result = this.getResult(shells);
         final boolean trackable = result.has(AllComponents.FLARE) && result.get(AllComponents.FLARE).trackable();
         result.set(AllComponents.FLARE, new FlareComponent(color, trackable));
         return result;

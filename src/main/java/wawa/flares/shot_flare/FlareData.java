@@ -19,6 +19,7 @@ public class FlareData {
                     Vec3.CODEC.fieldOf("vel").forGetter(FlareData::getVel),
                     UUIDUtil.CODEC.fieldOf("uuid").forGetter(FlareData::getUuid),
                     Codec.INT.fieldOf("life").forGetter(FlareData::getLife),
+                    Codec.INT.fieldOf("maxLife").forGetter(FlareData::getMaxLife),
                     Codec.BOOL.fieldOf("inGround").forGetter(FlareData::isInGround),
                     Codec.BOOL.fieldOf("syncable").forGetter(FlareData::isSyncable)
             ).apply(instance, FlareData::new));
@@ -32,6 +33,7 @@ public class FlareData {
     private Vec3 vel;
     private UUID uuid;
     private int life;
+    private int maxLife;
     private boolean inGround;
     private boolean syncable = false;
 
@@ -40,18 +42,19 @@ public class FlareData {
         this.copyFromEntity(uuid);
     }
 
-    public FlareData(final int color, final Vec3 pos, final Vec3 vel, final UUID uuid, final int life, final boolean inGround, final boolean syncable) {
-        this(false, color, pos, vel, uuid, life, inGround);
+    public FlareData(final int color, final Vec3 pos, final Vec3 vel, final UUID uuid, final int life, final int maxLife, final boolean inGround, final boolean syncable) {
+        this(false, color, pos, vel, uuid, life, maxLife, inGround);
         this.setSyncable(true);
     }
 
-    public FlareData(final boolean entityLoaded, final int color, final Vec3 pos, final Vec3 vel, final UUID uuid, final int life, final boolean inGround) {
+    public FlareData(final boolean entityLoaded, final int color, final Vec3 pos, final Vec3 vel, final UUID uuid, final int life, final int maxLife, final boolean inGround) {
         this.entityLoaded = entityLoaded;
         this.color = color;
         this.pos = pos;
         this.vel = vel;
         this.uuid = uuid;
         this.life = life;
+        this.maxLife = maxLife;
         this.inGround = inGround;
     }
 
@@ -77,6 +80,7 @@ public class FlareData {
         this.vel = entity.getDeltaMovement();
         this.uuid = entity.getUUID();
         this.life = entity.tickCount;
+        this.maxLife = entity.getMaxAge();
         this.inGround = entity.inGround();
     }
 
@@ -85,6 +89,7 @@ public class FlareData {
         entity.setPos(this.pos);
         entity.setDeltaMovement(this.vel);
         entity.tickCount = this.life;
+        entity.setMaxAge(this.maxLife);
         entity.setOnGround(this.inGround);
     }
 
@@ -105,7 +110,7 @@ public class FlareData {
     }
 
     public boolean shouldRemove() {
-        return this.life > 1200;
+        return this.life > this.maxLife;
     }
 
     @Override
@@ -135,6 +140,10 @@ public class FlareData {
 
     public int getLife() {
         return this.life;
+    }
+
+    public int getMaxLife() {
+        return this.maxLife;
     }
 
     public boolean isInGround() {
