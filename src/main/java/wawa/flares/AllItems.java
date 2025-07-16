@@ -22,12 +22,12 @@ public class AllItems {
         output.accept(SIGNALLING_FLARE_SHELL.get());
         for (final DyeColor color : DyeColor.values()) {
             final ItemStack stack = FLARE.toStack();
-            stack.set(AllComponents.FLARE.get(), new FlareComponent(color.getTextureDiffuseColor() | 0xFF000000, false));
+            stack.set(AllComponents.FLARE.get(), FlareComponent.illuminating(color.getTextureDiffuseColor()));
             output.accept(stack);
         }
         for (final DyeColor color : DyeColor.values()) {
             final ItemStack stack = SIGNALLING_FLARE.toStack();
-            stack.set(AllComponents.FLARE.get(), new FlareComponent(color.getTextureDiffuseColor() | 0xFF000000, true));
+            stack.set(AllComponents.FLARE.get(), FlareComponent.signalling(color.getTextureDiffuseColor()));
             output.accept(stack);
         }
     }
@@ -42,11 +42,11 @@ public class AllItems {
 
     public static final DeferredItem<Item> FLARE = ITEMS.register("illumination_flare",
             () -> new FlareItem(new Item.Properties()
-                    .component(AllComponents.FLARE.get(), FlareComponent.DEFAULT)
+                    .component(AllComponents.FLARE.get(), FlareComponent.illuminating(DyeColor.WHITE.getTextureDiffuseColor()))
             ));
 
     public static final DeferredItem<Item> SIGNALLING_FLARE = ITEMS.register("signalling_flare",
             () -> new FlareItem(new Item.Properties()
-                    .component(AllComponents.FLARE.get(), FlareComponent.DEFAULT_SIGNALLING)
+                    .component(AllComponents.FLARE.get(), FlareComponent.signalling(DyeColor.WHITE.getTextureDiffuseColor()))
             ));
 }

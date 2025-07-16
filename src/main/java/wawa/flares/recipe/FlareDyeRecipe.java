@@ -114,7 +114,11 @@ public class FlareDyeRecipe extends CustomRecipe {
 
         final ItemStack result = this.getResult(shells);
         final boolean trackable = result.has(AllComponents.FLARE) && result.get(AllComponents.FLARE).trackable();
-        result.set(AllComponents.FLARE, new FlareComponent(color, trackable));
+        int maxAge = trackable ? FlareComponent.SIGNALLING_MAX_AGE : FlareComponent.ILLUMINATING_MAX_AGE;
+        if (result.has(AllComponents.FLARE)) {
+            maxAge = result.get(AllComponents.FLARE).maxAge();
+        }
+        result.set(AllComponents.FLARE, new FlareComponent(color, maxAge, trackable));
         return result;
     }
 

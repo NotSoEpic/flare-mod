@@ -14,16 +14,24 @@ import wawa.flares.AllComponents;
 
 import java.util.List;
 
-public record FlareComponent(int argbColor, boolean trackable) {
-    public static FlareComponent DEFAULT = new FlareComponent(-1, false);
-    public static FlareComponent DEFAULT_SIGNALLING = new FlareComponent(-1, true);
+public record FlareComponent(int argbColor, int maxAge, boolean trackable) {
+    public static int ILLUMINATING_MAX_AGE = 5*60*20;
+    public static int SIGNALLING_MAX_AGE = 2*60*20;
+    public static FlareComponent illuminating(final int argbColor) {
+        return new FlareComponent(argbColor, ILLUMINATING_MAX_AGE, false);
+    }
+    public static FlareComponent signalling(final int argbColor) {
+        return new FlareComponent(argbColor, SIGNALLING_MAX_AGE, true);
+    }
     public static final Codec<FlareComponent> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
                     Codec.INT.fieldOf("color").forGetter(FlareComponent::argbColor),
+                    Codec.INT.fieldOf("maxAge").forGetter(FlareComponent::maxAge),
                     Codec.BOOL.optionalFieldOf("trackable", false).forGetter(FlareComponent::trackable)
             ).apply(instance, FlareComponent::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, FlareComponent> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT, FlareComponent::argbColor,
+            ByteBufCodecs.INT, FlareComponent::maxAge,
             ByteBufCodecs.BOOL, FlareComponent::trackable,
             FlareComponent::new
     );

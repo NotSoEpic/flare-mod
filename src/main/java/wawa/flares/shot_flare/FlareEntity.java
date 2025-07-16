@@ -51,7 +51,7 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
         final FlareComponent component = itemStack.get(AllComponents.FLARE);
         if (component != null) {
             this.setTrackable(component.trackable());
-            this.setMaxAge(component.trackable() ? 2400 : 6000);
+            this.setMaxAge(component.maxAge());
         }
     }
 
@@ -255,6 +255,7 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
         final FlareComponent component = stack.get(AllComponents.FLARE);
         if (component != null) {
             this.color = component.argbColor();
+            this.setMaxAge(component.maxAge());
             this.setTrackable(component.trackable());
         }
     }
@@ -302,8 +303,8 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
                     FlareHandlerServer.get(serverLevel).remove(this.uuid);
                 }
             } else if (this.level() instanceof final ClientLevel clientLevel) {
-                // clientside reason is always discarded, but will be readded with server syncing
-                FlareHandlerClient.remove(clientLevel, this.uuid);
+                // clientside reason is always discarded, but will be removed with the flare kill packet if its truly gone
+                FlareHandlerClient.setUnloaded(clientLevel, this.uuid);
             }
         }
     }
