@@ -45,7 +45,6 @@ public class FlareEntityRenderer extends EntityRenderer<FlareEntity> {
     public static void renderFlare(final MultiBufferSource bufferSource, final PoseStack poseStack,
                                    final float tickCount, final int maxAge, final boolean trackable, final int color, final float scale) {
         final Quaternionf quaternion = new Quaternionf(Minecraft.getInstance().gameRenderer.getMainCamera().rotation());
-//        quaternion.div(poseStack.last().pose().getNormalizedRotation(new Quaternionf())); // todo sable compat when i figure out how quaternions work
         final Vector3f dist = poseStack.last().pose().getTranslation(new Vector3f());
         float len = dist.length();
         if (len > 256) {

@@ -39,7 +39,6 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
     private static final EntityDataAccessor<Boolean> TRACKABLE = SynchedEntityData.defineId(FlareEntity.class, EntityDataSerializers.BOOLEAN);
     private LightRenderHandle<PointLightData> outerLight;
     private LightRenderHandle<PointLightData> innerLight;
-    public boolean theShadowsCuttingDeeper = false;
     public int color = -1;
     public FlareEntity(final EntityType<FlareEntity> entityType, final Level level) {
         super(entityType, level);
@@ -163,16 +162,15 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
                 final FlareComponent component = ((ItemStack)dataValue.value()).get(AllComponents.FLARE);
                 if (component != null) {
                     this.color = component.argbColor();
-                    this.theShadowsCuttingDeeper = component.isDarkerThanDark();
                     if (FlareConfig.CONFIG.doDynamicLights.get() && this.outerLight == null) {
                         final PointLightData outerLight = new PointLightData();
                         outerLight.setPosition(this.getX(), this.getY(), this.getZ());
-                        outerLight.setBrightness(this.theShadowsCuttingDeeper ? -1f : 1f);
+                        outerLight.setBrightness(1f);
                         outerLight.setRadius(25.0f);
 
                         final PointLightData innerLight = new PointLightData();
                         innerLight.setPosition(this.getX(), this.getY(), this.getZ());
-                        innerLight.setBrightness(this.theShadowsCuttingDeeper ? -3f : 3f);
+                        innerLight.setBrightness(3f);
                         innerLight.setRadius(2.5f);
 
                         outerLight.setColor(this.color);
@@ -230,9 +228,6 @@ public class FlareEntity extends AbstractArrow implements SetRemovedListener {
             outerLight.setPosition(pos.x, pos.y, pos.z);
             innerLight.setPosition(pos.x, pos.y, pos.z);
             float brightness = getIntensity(this.isTrackable(), this.tickCount, this.getMaxAge());
-            if (this.theShadowsCuttingDeeper) {
-                brightness *= -1;
-            }
             outerLight.setBrightness(brightness);
             outerLight.setRadius(25 * brightness);
             innerLight.setBrightness(brightness * 3);
